@@ -1,9 +1,12 @@
+/* eslint-disable no-unused-vars */
 import React from 'react'
 import { Avatar, Dropdown, Navbar } from "flowbite-react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 
 
 function Navbarr() {
+    const { loginWithRedirect, isAuthenticated, logout, user } = useAuth0();
     return (
         <>
             <Navbar fluid rounded>
@@ -37,7 +40,17 @@ function Navbarr() {
                     </Navbar.Link>
                     <Navbar.Link href="/About">About</Navbar.Link>
                     <Navbar.Link href="/Services">Services</Navbar.Link>
-                    <Navbar.Link href="/Signup">Signup/Login</Navbar.Link>
+                    <li>{isAuthenticated && <p>{user.name}</p>}</li>
+
+                    {
+                        isAuthenticated ?
+                            (<button onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+                                Log Out
+                            </button>)
+                            : (
+                                <button onClick={() => loginWithRedirect()}>Log In</button>)
+
+                    }
                     <Navbar.Link href="/Contact">Contact</Navbar.Link>
                 </Navbar.Collapse>
             </Navbar>
