@@ -16,7 +16,8 @@
     "express-openid-connect": "^2.17.1",
     "flowbite-react": "^0.10.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.27.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
@@ -31,6 +32,7 @@
     "globals": "^15.9.0",
     "nodemon": "^3.1.5",
     "postcss": "^8.4.47",
+    "semantic-ui-ember": "github:Semantic-Org/Semantic-UI-Ember",
     "tailwindcss": "^3.4.12",
     "vite": "^5.4.6"
   }
