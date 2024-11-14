@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';    
 import Navbar from '../component/Navbarr';                
-import { Button } from "flowbite-react";                  
+import { Button } from "flowbite-react"; 
+import HotelSearch from '../component/HotelSearch';                 
 
 const HomePage = () => {
   // const navigate = useNavigate();  
@@ -13,6 +14,7 @@ const HomePage = () => {
   return (
     <>
       <Navbar />  {/* Your Navbar component */}
+      <HotelSearch />  {/* Your HotelSearch component */}
       
       {/* <div style={{ margin: '20px' }}>
         <Button color="blue" pill onClick={handleClick}>  

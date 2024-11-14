@@ -1,8 +1,10 @@
 import React from 'react'
+import Navbar from '../component/Navbarr';
 
 function About() {
     return (
         <>
+            <Navbar/>
             <div class="sm:p-10 my-auto">
                 <section class="mx-auto max-w-screen-xl md:rounded-md md:border md:shadow-lg">
                     <div class="grid grid-cols-4 text-gray-800 lg:grid-cols-3">
