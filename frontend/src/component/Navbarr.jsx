@@ -35,11 +35,12 @@ function Navbarr() {
                     <Navbar.Toggle />
                 </div>
                 <Navbar.Collapse>
-                    <Navbar.Link href="#" active>
+                    <Navbar.Link href="/" active>
                         Home
                     </Navbar.Link>
                     <Navbar.Link href="/About">About</Navbar.Link>
                     <Navbar.Link href="/Services">Services</Navbar.Link>
+                    <Navbar.Link href="/Imgupload">Imgupload</Navbar.Link>
                     <li>{isAuthenticated && <p>{user.name}</p>}</li>
 
                     {
