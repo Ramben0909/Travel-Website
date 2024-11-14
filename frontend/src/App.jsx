@@ -4,7 +4,7 @@ import Homepage from './pages/Homepage';
 // import Page1 from './pages/Page1';
 import Services from './pages/Services';
 import About from './pages/About';
-
+import Imgupload from './pages/Imgupload';
 function App() {
   return (
     <Router>
@@ -13,6 +13,7 @@ function App() {
         {/* <Route path="/page1" element={<Page1 />} /> */}
         <Route path="/services" element={<Services />} />
         <Route path="/about" element={<About/>} />
+        <Route path="/imgupload" element={<Imgupload/>} />
       </Routes>
     </Router>
   );
