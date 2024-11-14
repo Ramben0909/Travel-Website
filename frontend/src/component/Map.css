@@ -1,0 +1,20 @@
+.zoom-controls {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  .zoom-controls button {
+    margin: 5px;
+  }
+
+  .map-container {
+    width: 1000vw;  /* Full width of the viewport */
+    height: 80vh;  /* 80% of the viewport height */
+  }
+  
+  
