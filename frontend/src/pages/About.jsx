@@ -1,6 +1,5 @@
 import React from 'react'
 import Navbar from '../component/Navbarr';
-import Navbar from '../component/Navbarr';
 
 function About() {
     return (
