@@ -53,6 +53,7 @@ function Navbarr() {
                     }
                     <Navbar.Link href="/Contact">Contact</Navbar.Link>
                     <Navbar.Link href="/Hotels">Contact</Navbar.Link>
+                    <Navbar.Link href="/hotelsearch">Hotel Search</Navbar.Link>
                 </Navbar.Collapse>
             </Navbar>
         </>
