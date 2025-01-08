@@ -4,7 +4,7 @@ import Homepage from './pages/Homepage';
 // import Page1 from './pages/Page1';
 import Services from './pages/Services';
 import About from './pages/About';
-import HotelSearch from '../src/component/HotelSearch';
+import ImageUpload from './pages/Imgupload';
 
 function App() {
   return (
@@ -14,7 +14,8 @@ function App() {
         {/* <Route path="/page1" element={<Page1 />} /> */}
         <Route path="/services" element={<Services />} />
         <Route path="/about" element={<About/>} />
-        <Route path="/hotelsearch" element={<HotelSearch />} />
+        <Route path="/Imgupload" element={<ImageUpload />} />
+
       </Routes>
     </Router>
   );
