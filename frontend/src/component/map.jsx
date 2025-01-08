@@ -15,9 +15,9 @@ const Map = () => {
   const [places, setPlaces] = useState([]); // State for nearby places
   const [hotels, setHotels] = useState([]);
   const [newPlace, setNewPlace] = useState(null); // State for new marker coordinates
-  const markerRef = useRef(null); // Ref for the user's marker
-  const placeMarkersRef = useRef([]); // Ref for all place markers
-  const hotelMarkersRef = useRef([]); // Ref for all hotel markers
+  const markerRef = useRef(null); // Ref for the marker
+  const [searchQuery, setSearchQuery] = useState(""); // State for search input
+  const [searchResult, setSearchResult] = useState(null); // State for search result marker
 
   const getBoundingBox = (latitude, longitude, radius) => {
     const R = 6371; // Radius of the Earth in km
@@ -43,12 +43,16 @@ const Map = () => {
       const response = await axios.get(apiUrl);
       const placesData = response.data.features.map((feature) => {
         const coordinates = feature.geometry.coordinates;
+        const coordinates = feature.geometry.coordinates;
         return {
           name: feature.properties.name,
           lat: coordinates[1],
           lng: coordinates[0],
+          lat: coordinates[1],
+          lng: coordinates[0],
         };
       });
+      setPlaces(placesData);
       setPlaces(placesData);
     } catch (error) {
       console.error("Error:", error.response?.data || error.message);
@@ -56,85 +60,93 @@ const Map = () => {
   };
 
   const fetchHotelPlaces = async (latitude, longitude) => {
+
+  const fetchHotelPlaces = async (latitude, longitude) => {
     const apiKey = "235a929292f84ed0a5587d7ea5eab757";
-    const radius = 6000; // 6 km
-
+    const radius = 6000; // 50 km
     const url = `https://api.geoapify.com/v2/places?categories=accommodation.hotel&filter=circle:${longitude},${latitude},${radius}&bias=proximity:${longitude},${latitude}&limit=20&apiKey=${apiKey}`;
-
     try {
       const response = await axios.get(url);
-
-      if (response.data && response.data.features) {
-        const hotelData = response.data.features.map((feature) => {
-          const coordinates = feature.geometry.coordinates;
-          return {
-            name: feature.properties.name || "Unnamed Hotel",
-            lat: coordinates[1],
-            lng: coordinates[0],
-          };
-        });
-        setHotels(hotelData);
-      }
+      console.log(response);
     } catch (error) {
-      console.error("Error fetching hotel data:", error.response?.data || error.message);
+      console.error("Error:", error.response?.data || error.message);
     }
   };
 
-  const initializeMap = (longitude, latitude) => {
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: "mapbox://styles/mapbox/streets-v11",
-      center: [longitude, latitude],
-      zoom: zoom,
-    });
+  const handleSearch = async () => {
+    const apiKey = "b3982f86cf06435badef18096b9f1d69";
+    const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
+      searchQuery
+    )}&limit=1&format=json&apiKey=${apiKey}`;
 
-    const userMarker = new mapboxgl.Marker({ color: "tomato" })
-      .setLngLat([longitude, latitude])
-      .addTo(map.current);
-    markerRef.current = userMarker;
+    try {
+      const response = await axios.get(url);
+      if (response.data.results.length > 0) {
+        const result = response.data.results[0];
+        const { lat, lon } = result;
+        setSearchResult({ lat, lon });
 
-    const geolocateControl = new mapboxgl.GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: true,
-      },
-      trackUserLocation: true,
-      showUserLocation: true,
-    });
-    map.current.addControl(geolocateControl);
+        map.current.flyTo({
+          center: [lon, lat],
+          zoom: 14,
+          essential: true,
+        });
 
-    map.current.on("dblclick", (e) => {
-      const { lng, lat } = e.lngLat;
-      setNewPlace({ lng, lat });
+        if (markerRef.current) {
+          markerRef.current.remove();
+        }
 
-      if (markerRef.current) {
-        markerRef.current.remove();
+        const marker = new mapboxgl.Marker({ color: "green" })
+          .setLngLat([lon, lat])
+          .setPopup(new mapboxgl.Popup().setText(searchQuery)) // Add popup with the search query
+          .addTo(map.current);
+        markerRef.current = marker;
+      } else {
+        alert("Place not found.");
       }
-
-      const marker = new mapboxgl.Marker({ color: "tomato" })
-        .setLngLat([lng, lat])
-        .addTo(map.current);
-      markerRef.current = marker;
-
-      map.current.flyTo({
-        center: [lng, lat],
-        essential: true,
-      });
-
-      // Clear previous markers
-      placeMarkersRef.current.forEach((marker) => marker.remove());
-      placeMarkersRef.current = [];
-      hotelMarkersRef.current.forEach((marker) => marker.remove());
-      hotelMarkersRef.current = [];
-
-      setPlaces([]);
-      setHotels([]);
-
-      fetchTouristPlaceDetails(lat, lng);
-      fetchHotelPlaces(lat, lng);
-    });
+    } catch (error) {
+      console.error("Error:", error.response?.data || error.message);
+    }
   };
 
   useEffect(() => {
+    const initializeMap = (longitude, latitude) => {
+      map.current = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: "mapbox://styles/mapbox/streets-v11",
+        center: [longitude, latitude],
+        zoom: zoom,
+      });
+
+      const userMarker = new mapboxgl.Marker({ color: "tomato" })
+        .setLngLat([longitude, latitude])
+        .addTo(map.current);
+      markerRef.current = userMarker;
+
+      const geolocateControl = new mapboxgl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true,
+        },
+        trackUserLocation: true,
+        showUserLocation: true,
+      });
+      map.current.addControl(geolocateControl);
+
+      map.current.on("dblclick", (e) => {
+        const { lng, lat } = e.lngLat;
+        setNewPlace({ lng, lat });
+
+        if (markerRef.current) {
+          markerRef.current.remove();
+        }
+
+        const marker = new mapboxgl.Marker({ color: "tomato" })
+          .setLngLat([lng, lat])
+          .addTo(map.current);
+        markerRef.current = marker;
+      });
+    };
+
     const getCurrentLocation = () => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -146,11 +158,14 @@ const Map = () => {
             initializeMap(userLng, userLat);
             fetchTouristPlaceDetails(userLat, userLng);
             fetchHotelPlaces(userLat, userLng);
+            fetchTouristPlaceDetails(userLat, userLng);
+            fetchHotelPlaces(userLat, userLng);
           },
           (error) => {
             console.error("Geolocation error:", error);
             alert("Unable to retrieve your location. Showing default location.");
             initializeMap(lng, lat);
+            fetchTouristPlaceDetails(lat, lng);
             fetchTouristPlaceDetails(lat, lng);
           }
         );
@@ -158,22 +173,20 @@ const Map = () => {
         alert("Geolocation is not supported by your browser.");
         initializeMap(lng, lat);
         fetchTouristPlaceDetails(lat, lng);
+        fetchTouristPlaceDetails(lat, lng);
       }
     };
 
+    getCurrentLocation();
     getCurrentLocation();
   }, [lng, lat, zoom]);
 
   useEffect(() => {
     if (map.current && places.length > 0) {
-      // Clear existing place markers
-      placeMarkersRef.current.forEach((marker) => marker.remove());
-      placeMarkersRef.current = [];
-
-      // Add new place markers
       places.forEach((place) => {
         const marker = new mapboxgl.Marker({ color: "blue" })
           .setLngLat([place.lng, place.lat])
+          .setPopup(new mapboxgl.Popup().setText(place.name))
           .setPopup(new mapboxgl.Popup().setText(place.name))
           .addTo(map.current);
         placeMarkersRef.current.push(marker);
@@ -200,6 +213,33 @@ const Map = () => {
 
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
+      <div style={{ position: "absolute", top: 10, left: 10, zIndex: 1000 }}>
+        <input
+          type="text"
+          placeholder="Search for a place"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{
+            padding: "10px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+            marginRight: "5px",
+          }}
+        />
+        <button
+          onClick={handleSearch}
+          style={{
+            padding: "10px",
+            borderRadius: "5px",
+            backgroundColor: "tomato",
+            color: "white",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          Search
+        </button>
+      </div>
       <div
         ref={mapContainer}
         className="map-container"

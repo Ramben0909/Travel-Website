@@ -5,6 +5,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 
 
+
 function Navbarr() {
     const { loginWithRedirect, isAuthenticated, logout, user } = useAuth0();
     return (
@@ -53,8 +54,6 @@ function Navbarr() {
 
                     }
                     <Navbar.Link href="/Contact">Contact</Navbar.Link>
-                    <Navbar.Link href="/Hotels">Contact</Navbar.Link>
-                    <Navbar.Link href="/hotelsearch">Hotel Search</Navbar.Link>
                 </Navbar.Collapse>
             </Navbar>
         </>
