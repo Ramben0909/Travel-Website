@@ -13,6 +13,7 @@ const Map = () => {
   const [lat, setLat] = useState(23.10166); // Default latitude
   const [zoom, setZoom] = useState(12); // Default zoom
   const [places, setPlaces] = useState([]); // State for nearby places
+  const [hotels, setHotels] = useState([]);
   const [newPlace, setNewPlace] = useState(null); // State for new marker coordinates
   const markerRef = useRef(null); // Ref for the marker
   const [searchQuery, setSearchQuery] = useState(""); // State for search input
@@ -33,7 +34,7 @@ const Map = () => {
 
   const fetchTouristPlaceDetails = async (latitude, longitude) => {
     const apiKey = "235a929292f84ed0a5587d7ea5eab757";
-    const radius = 150; // 50 km
+    const radius = 150; // 150 km
     const { minLat, maxLat, minLon, maxLon } = getBoundingBox(latitude, longitude, radius);
 
     const apiUrl = `https://api.geoapify.com/v2/places?categories=tourism&filter=rect:${minLon},${minLat},${maxLon},${maxLat}&limit=100&apiKey=${apiKey}`;
@@ -42,17 +43,23 @@ const Map = () => {
       const response = await axios.get(apiUrl);
       const placesData = response.data.features.map((feature) => {
         const coordinates = feature.geometry.coordinates;
+        const coordinates = feature.geometry.coordinates;
         return {
           name: feature.properties.name,
+          lat: coordinates[1],
+          lng: coordinates[0],
           lat: coordinates[1],
           lng: coordinates[0],
         };
       });
       setPlaces(placesData);
+      setPlaces(placesData);
     } catch (error) {
       console.error("Error:", error.response?.data || error.message);
     }
   };
+
+  const fetchHotelPlaces = async (latitude, longitude) => {
 
   const fetchHotelPlaces = async (latitude, longitude) => {
     const apiKey = "235a929292f84ed0a5587d7ea5eab757";
@@ -151,11 +158,14 @@ const Map = () => {
             initializeMap(userLng, userLat);
             fetchTouristPlaceDetails(userLat, userLng);
             fetchHotelPlaces(userLat, userLng);
+            fetchTouristPlaceDetails(userLat, userLng);
+            fetchHotelPlaces(userLat, userLng);
           },
           (error) => {
             console.error("Geolocation error:", error);
             alert("Unable to retrieve your location. Showing default location.");
             initializeMap(lng, lat);
+            fetchTouristPlaceDetails(lat, lng);
             fetchTouristPlaceDetails(lat, lng);
           }
         );
@@ -163,22 +173,43 @@ const Map = () => {
         alert("Geolocation is not supported by your browser.");
         initializeMap(lng, lat);
         fetchTouristPlaceDetails(lat, lng);
+        fetchTouristPlaceDetails(lat, lng);
       }
     };
 
+    getCurrentLocation();
     getCurrentLocation();
   }, [lng, lat, zoom]);
 
   useEffect(() => {
     if (map.current && places.length > 0) {
       places.forEach((place) => {
-        new mapboxgl.Marker({ color: "blue" })
+        const marker = new mapboxgl.Marker({ color: "blue" })
           .setLngLat([place.lng, place.lat])
           .setPopup(new mapboxgl.Popup().setText(place.name))
+          .setPopup(new mapboxgl.Popup().setText(place.name))
           .addTo(map.current);
+        placeMarkersRef.current.push(marker);
       });
     }
   }, [places]);
+
+  useEffect(() => {
+    if (map.current && hotels.length > 0) {
+      // Clear existing hotel markers
+      hotelMarkersRef.current.forEach((marker) => marker.remove());
+      hotelMarkersRef.current = [];
+
+      // Add new hotel markers
+      hotels.forEach((hotel) => {
+        const marker = new mapboxgl.Marker({ color: "green" })
+          .setLngLat([hotel.lng, hotel.lat])
+          .setPopup(new mapboxgl.Popup().setText(hotel.name))
+          .addTo(map.current);
+        hotelMarkersRef.current.push(marker);
+      });
+    }
+  }, [hotels]);
 
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
