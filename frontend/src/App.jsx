@@ -15,7 +15,6 @@ function App() {
         <Route path="/services" element={<Services />} />
         <Route path="/about" element={<About/>} />
         <Route path="/Imgupload" element={<ImageUpload />} />
-
       </Routes>
     </Router>
   );
