@@ -139,6 +139,11 @@ const Map = () => {
       console.error("Error searching for location:", error.response?.data || error.message);
     }
   };
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
   
   
   const initializeMap = (longitude, latitude) => {
@@ -283,6 +288,7 @@ const Map = () => {
           placeholder="Search for a place"
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
+          onKeyDown={handleKeyDown}
           style={{ padding: "5px", marginRight: "5px" }}
         />
         <button onClick={handleSearch} style={{ padding: "5px" }}>
