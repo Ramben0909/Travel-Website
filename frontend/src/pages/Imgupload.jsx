@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Navbarr from '../component/Navbarr';
 
 const ImageUpload = () => {
   const [image, setImage] = useState(null);
@@ -20,10 +21,13 @@ const ImageUpload = () => {
   };
 
   return (
+    <>
+    <Navbarr/>
     <div>
       <input type="file" onChange={uploadImage} />
       {url && <img src={url} alt="Uploaded" style={{ width: '300px' }} />}
     </div>
+    </>
   );
 };
 
