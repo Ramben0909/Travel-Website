@@ -344,7 +344,9 @@ const Map = () => {
           type="text"
           placeholder="Search for a place"
           value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
+          onChange={(e) => {setSearchText(e.target.value),
+            fetchSuggestions(e.target.value)
+          }}
           onKeyDown={handleKeyDown}
           style={{ padding: "5px", marginRight: "5px" }}
         />
