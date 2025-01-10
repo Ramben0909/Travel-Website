@@ -138,6 +138,70 @@ const Map = () => {
     }
   };
 
+  const handleSearch = async () => {
+    if (!searchText.trim()) return; // Ensure there's text to search
+  
+    const apiUrl = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
+      searchText
+    )}&format=json&apiKey=235a929292f84ed0a5587d7ea5eab757`;
+  
+    try {
+      const response = await axios.get(apiUrl);
+  
+      if (response.data && response.data.results.length > 0) {
+        const result = response.data.results[0];
+        const searchLng = result.lon;
+        const searchLat = result.lat;
+  
+        // Remove previous search marker
+        if (searchMarkerRef.current) {
+          searchMarkerRef.current.remove();
+        }
+
+        if (markerRef.current) {
+          markerRef.current.remove();
+        }
+  
+        // Add new search marker
+        const searchMarker = new mapboxgl.Marker({ color: "red" })
+          .setLngLat([searchLng, searchLat])
+          .setPopup(new mapboxgl.Popup().setText(searchText))
+          .addTo(map.current);
+        searchMarkerRef.current = searchMarker;
+
+        // Update map center without reinitializing
+        map.current.flyTo({
+          center: [searchLng, searchLat],
+          essential: true,
+        });
+  
+        // Clear state for places and hotels
+        setPlaces([]);
+        setHotels([]);
+  
+        // Remove all existing markers
+      placeMarkersRef.current.forEach((marker) => marker.remove());
+      placeMarkersRef.current = [];
+      hotelMarkersRef.current.forEach((marker) => marker.remove());
+      hotelMarkersRef.current = [];
+  
+        // Fetch new places and hotels
+        fetchTouristPlaceDetails(searchLat, searchLng);
+        fetchHotelPlaces(searchLat, searchLng);
+      } else {
+        alert("No results found for the entered location.");
+      }
+    } catch (error) {
+      console.error("Error searching for location:", error.response?.data || error.message);
+    }
+  };
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+  
+  
   const initializeMap = (longitude, latitude) => {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -167,6 +231,11 @@ const Map = () => {
       if (markerRef.current) {
         markerRef.current.remove();
       }
+
+      if (searchMarkerRef.current) {
+        searchMarkerRef.current.remove();
+      }
+
 
       const marker = new mapboxgl.Marker({ color: "tomato" })
         .setLngLat([lng, lat])
@@ -218,9 +287,10 @@ const Map = () => {
         fetchTouristPlaceDetails(lat, lng);
       }
     };
-
+  
     getCurrentLocation();
-  }, [lng, lat, zoom]);
+  }, []); // Run only once
+  
 
   useEffect(() => {
     if (map.current && places.length > 0) {
@@ -274,11 +344,9 @@ const Map = () => {
           type="text"
           placeholder="Search for a place"
           value={searchText}
-          onChange={(e) => {
-            setSearchText(e.target.value);
-            fetchSuggestions(e.target.value);
-          }}
-          style={{ padding: "5px", width: "100%", marginBottom: "5px" }}
+          onChange={(e) => setSearchText(e.target.value)}
+          onKeyDown={handleKeyDown}
+          style={{ padding: "5px", marginRight: "5px" }}
         />
         {suggestions.length > 0 && (
           <ul
