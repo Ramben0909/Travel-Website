@@ -16,7 +16,7 @@ function Profile() {
                 const token = await getAccessTokenSilently();
 
                 const response = await fetch(
-                    "https://YOUR_AUTH0_DOMAIN/userinfo", // Replace with your Auth0 domain
+                    "https://dev-lqqb867tohygzl1e.us.auth0.com/userinfo", // Replace with your Auth0 domain
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
