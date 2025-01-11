@@ -20,6 +20,62 @@ const Map = () => {
   const hotelMarkersRef = useRef([]); // Ref for all hotel markers
   const searchMarkerRef = useRef(null); // Ref for search place marker
   const [searchText, setSearchText] = useState(""); // Search box text
+  const [suggestions, setSuggestions] = useState([]); // State for autocomplete suggestions
+
+  const fetchSuggestions = async (query) => {
+    if (!query.trim()) {
+      setSuggestions([]);
+      return;
+    }
+
+    const apiUrl = `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(
+      query
+    )}&apiKey=235a929292f84ed0a5587d7ea5eab757`;
+
+    try {
+      const response = await axios.get(apiUrl);
+      if (response.data && response.data.features) {
+        const suggestionList = response.data.features.map((feature) => ({
+          name: feature.properties.formatted,
+          lat: feature.properties.lat,
+          lng: feature.properties.lon,
+        }));
+        setSuggestions(suggestionList);
+      } else {
+        setSuggestions([]);
+      }
+    } catch (error) {
+      console.error("Error fetching autocomplete suggestions:", error.response?.data || error.message);
+      setSuggestions([]);
+    }
+  };
+
+  const handleSearchSelect = (suggestion) => {
+    const { lat, lng, name } = suggestion;
+
+    // Remove existing search marker if present
+    if (searchMarkerRef.current) {
+      searchMarkerRef.current.remove();
+    }
+
+    // Add new search marker
+    const searchMarker = new mapboxgl.Marker({ color: "red" })
+      .setLngLat([lng, lat])
+      .setPopup(new mapboxgl.Popup().setText(name))
+      .addTo(map.current);
+
+    searchMarkerRef.current = searchMarker;
+
+    // Fly to the selected location
+    map.current.flyTo({
+      center: [lng, lat],
+      essential: true,
+    });
+
+    // Clear search text and suggestions
+    setSearchText(name);
+    setSuggestions([]);
+  };
 
   const getBoundingBox = (latitude, longitude, radius) => {
     const R = 6371; // Radius of the Earth in km
@@ -278,19 +334,47 @@ const Map = () => {
           backgroundColor: "white",
           padding: "10px",
           borderRadius: "5px",
+          width: "300px",
         }}
       >
         <input
           type="text"
           placeholder="Search for a place"
           value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
+          onChange={(e) => {setSearchText(e.target.value),
+            fetchSuggestions(e.target.value)
+          }}
           onKeyDown={handleKeyDown}
           style={{ padding: "5px", marginRight: "5px" }}
         />
-        <button onClick={handleSearch} style={{ padding: "5px" }}>
-          Search
-        </button>
+        {suggestions.length > 0 && (
+          <ul
+            style={{
+              listStyle: "none",
+              padding: "5px",
+              margin: 0,
+              maxHeight: "150px",
+              overflowY: "auto",
+              border: "1px solid #ccc",
+              borderRadius: "5px",
+              backgroundColor: "#fff",
+            }}
+          >
+            {suggestions.map((suggestion, index) => (
+              <li
+                key={index}
+                onClick={() => handleSearchSelect(suggestion)}
+                style={{
+                  padding: "5px",
+                  cursor: "pointer",
+                  borderBottom: "1px solid #ddd",
+                }}
+              >
+                {suggestion.name}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
       <div
         ref={mapContainer}

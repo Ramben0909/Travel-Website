@@ -5,6 +5,9 @@ import Homepage from './pages/Homepage';
 import Services from './pages/Services';
 import About from './pages/About';
 import ImageUpload from './pages/Imgupload';
+import Travel from './pages/Travel';
+import Wishlist from './pages/Wishlist';
+
 
 function App() {
   return (
@@ -15,6 +18,10 @@ function App() {
         <Route path="/services" element={<Services />} />
         <Route path="/about" element={<About/>} />
         <Route path="/Imgupload" element={<ImageUpload />} />
+        <Route path="/Travel" element={<Travel />} />
+        <Route path="/Wishlist" element={<Wishlist />} />
+        
+
       </Routes>
     </Router>
   );
