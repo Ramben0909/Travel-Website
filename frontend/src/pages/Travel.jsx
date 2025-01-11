@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ShoppingCart, Plus, Minus, Star } from 'lucide-react';
-import Navbar from '../component/Navbarr';
+import Navbar from '../component/Navbar';
 
 // Sample travel essentials data
 const travelEssentials = [
