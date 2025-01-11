@@ -72,9 +72,23 @@ const Map = () => {
       essential: true,
     });
 
+
     // Clear search text and suggestions
     setSearchText(name);
     setSuggestions([]);
+    // Clear state for places and hotels
+    setPlaces([]);
+    setHotels([]);
+
+    // Remove all existing markers
+        placeMarkersRef.current.forEach((marker) => marker.remove());
+        placeMarkersRef.current = [];
+        hotelMarkersRef.current.forEach((marker) => marker.remove());
+        hotelMarkersRef.current = [];
+
+        // Fetch new places and hotels
+        fetchTouristPlaceDetails(lat, lng);
+        fetchHotelPlaces(lat, lng);
   };
 
   const getBoundingBox = (latitude, longitude, radius) => {
