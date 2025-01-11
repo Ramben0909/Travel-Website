@@ -58,6 +58,11 @@ const Map = () => {
       searchMarkerRef.current.remove();
     }
 
+    if (markerRef.current) {
+      markerRef.current.remove();
+    }
+
+
     // Add new search marker
     const searchMarker = new mapboxgl.Marker({ color: "red" })
       .setLngLat([lng, lat])
