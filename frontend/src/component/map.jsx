@@ -145,7 +145,32 @@ const Map = () => {
     }
   };
   
-  
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLng = position.coords.longitude;
+          const userLat = position.coords.latitude;
+          setLng(userLng);
+          setLat(userLat);
+          initializeMap(userLng, userLat);
+          fetchTouristPlaceDetails(userLat, userLng);
+          fetchHotelPlaces(userLat, userLng);
+        },
+        (error) => {
+          console.error("Geolocation error:", error);
+          alert("Unable to retrieve your location. Showing default location.");
+          initializeMap(lng, lat);
+          fetchTouristPlaceDetails(lat, lng);
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by your browser.");
+      initializeMap(lng, lat);
+      fetchTouristPlaceDetails(lat, lng);
+    }
+  };
+
   const initializeMap = (longitude, latitude) => {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -179,8 +204,6 @@ const Map = () => {
       if (searchMarkerRef.current) {
         searchMarkerRef.current.remove();
       }
-
-
       const marker = new mapboxgl.Marker({ color: "tomato" })
         .setLngLat([lng, lat])
         .addTo(map.current);
@@ -190,7 +213,7 @@ const Map = () => {
         center: [lng, lat],
         essential: true,
       });
-
+      setZoom(12);
       // Clear previous markers
       placeMarkersRef.current.forEach((marker) => marker.remove());
       placeMarkersRef.current = [];
@@ -206,34 +229,8 @@ const Map = () => {
   };
 
   useEffect(() => {
-    const getCurrentLocation = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const userLng = position.coords.longitude;
-            const userLat = position.coords.latitude;
-            setLng(userLng);
-            setLat(userLat);
-            initializeMap(userLng, userLat);
-            fetchTouristPlaceDetails(userLat, userLng);
-            fetchHotelPlaces(userLat, userLng);
-          },
-          (error) => {
-            console.error("Geolocation error:", error);
-            alert("Unable to retrieve your location. Showing default location.");
-            initializeMap(lng, lat);
-            fetchTouristPlaceDetails(lat, lng);
-          }
-        );
-      } else {
-        alert("Geolocation is not supported by your browser.");
-        initializeMap(lng, lat);
-        fetchTouristPlaceDetails(lat, lng);
-      }
-    };
-  
     getCurrentLocation();
-  }, []); // Run only once
+  },[]);
   
 
   useEffect(() => {
