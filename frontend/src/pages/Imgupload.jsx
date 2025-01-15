@@ -38,24 +38,30 @@ const ImageUpload = () => {
   return (
     <>
       <Navbar />
-      <div className="max-w-4xl mx-auto p-6">
-        <h2 className="text-2xl font-bold mb-6">Image Upload</h2>
+      <div className="max-w-4xl mx-auto p-8 bg-white shadow-lg rounded-lg mt-8">
+        <h2 className="text-3xl font-extrabold text-gray-800 mb-6">Image Upload</h2>
         <div className="flex flex-col items-center space-y-4">
           <input
             type="file"
             accept="image/*"
             onChange={uploadImage}
-            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
+            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 p-2"
           />
-          {uploading && <p className="text-blue-500">Uploading...</p>}
-          {error && <p className="text-red-500">{error}</p>}
+          {uploading && (
+            <p className="text-blue-500 font-semibold animate-pulse">
+              Uploading...
+            </p>
+          )}
+          {error && <p className="text-red-500 font-medium">{error}</p>}
           {url && (
-            <div>
-              <p className="text-green-500">Image uploaded successfully!</p>
+            <div className="text-center">
+              <p className="text-green-500 font-semibold">
+                Image uploaded successfully!
+              </p>
               <img
                 src={url}
                 alt="Uploaded"
-                className="mt-4 rounded-lg shadow-md"
+                className="mt-4 rounded-lg shadow-md border-2 border-gray-200"
                 style={{ width: '300px', height: 'auto' }}
               />
             </div>
