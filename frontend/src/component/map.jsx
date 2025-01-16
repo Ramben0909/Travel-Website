@@ -76,6 +76,8 @@ const Map = () => {
       center: [lng, lat],
       essential: true,
     });
+    setLat(lat);
+    setLng(lng);
 
 
     // Clear search text and suggestions
@@ -193,6 +195,9 @@ const Map = () => {
           center: [searchLng, searchLat],
           essential: true,
         });
+
+        setLat(searchLat);
+        setLng(searchLng);
   
         // Clear state for places and hotels
         setPlaces([]);
@@ -220,18 +225,19 @@ const Map = () => {
     }
   };
   const showDirection = async (place) => {
-    // Ensure that the map instance exists
+    
     if (!map.current) {
       console.error("Map not found");
       return;
     }
-    const mapCenter = map.current.getCenter(); // Get the current center of the map
-    const originLat = mapCenter.lat;
-    const originLng = mapCenter.lng;
+   
+    const originLat = lat;
+    const originLng = lng;
     const destinationLat = place.lat;
     const destinationLng = place.lng;
-    console.log(originLat);
-    console.log(originLng);
+    
+    console.log(lat)
+    console.log(lng)
     const apiKey = `235a929292f84ed0a5587d7ea5eab757`;
     const url = `https://api.geoapify.com/v1/routing?waypoints=${originLat},${originLng}|${destinationLat},${destinationLng}&mode=drive&apiKey=${apiKey}`;
     
@@ -353,6 +359,8 @@ const Map = () => {
         essential: true,
       });
       setZoom(12);
+      setLat(lat);
+      setLng(lng);
       // Clear previous markers
       placeMarkersRef.current.forEach((marker) => marker.remove());
       placeMarkersRef.current = [];
