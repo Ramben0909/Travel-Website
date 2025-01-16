@@ -76,6 +76,8 @@ const Map = () => {
       center: [lng, lat],
       essential: true,
     });
+    setLat(lat);
+    setLng(lng);
 
 
     // Clear search text and suggestions
@@ -193,6 +195,9 @@ const Map = () => {
           center: [searchLng, searchLat],
           essential: true,
         });
+
+        setLat(searchLat);
+        setLng(searchLng);
   
         // Clear state for places and hotels
         setPlaces([]);
@@ -217,6 +222,71 @@ const Map = () => {
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleSearch();
+    }
+  };
+  const showDirection = async (place) => {
+    
+    if (!map.current) {
+      console.error("Map not found");
+      return;
+    }
+   
+    const originLat = lat;
+    const originLng = lng;
+    const destinationLat = place.lat;
+    const destinationLng = place.lng;
+    
+    console.log(lat)
+    console.log(lng)
+    const apiKey = `235a929292f84ed0a5587d7ea5eab757`;
+    const url = `https://api.geoapify.com/v1/routing?waypoints=${originLat},${originLng}|${destinationLat},${destinationLng}&mode=drive&apiKey=${apiKey}`;
+    
+    try {
+      const res = await axios.get(url);
+      // Check if the response contains features
+      if (res.data && res.data.features && res.data.features.length > 0) {
+        const routeGeoJson = res.data.features[0].geometry; // Get the geometry of the route
+        console.log("Route GeoJSON:", routeGeoJson); // Log the route to inspect it
+        
+        // Remove any previous route layer if it exists
+        if (map.current.getLayer("route")) {
+          map.current.removeLayer("route");
+          map.current.removeSource("route");
+        }
+  
+        // Add a new route layer
+        map.current.addSource("route", {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            geometry: routeGeoJson,
+          },
+        });
+  
+        map.current.addLayer({
+          id: "route",
+          type: "line",
+          source: "route",
+          layout: {
+            "line-join": "round",
+            "line-cap": "round",
+          },
+          paint: {
+            "line-color": "#FF5733", // Line color
+            "line-width": 5, // Line width
+          },
+        });
+  
+        // Optionally, fly to the destination
+        map.current.flyTo({
+          center: [destinationLng, destinationLat],
+          essential: true,
+        });
+      } else {
+        console.error("No route found in the response.");
+      }
+    } catch (error) {
+      console.error("Error fetching direction:", error.response?.data || error.message);
     }
   };
   
@@ -289,12 +359,14 @@ const Map = () => {
         essential: true,
       });
       setZoom(12);
+      setLat(lat);
+      setLng(lng);
       // Clear previous markers
       placeMarkersRef.current.forEach((marker) => marker.remove());
       placeMarkersRef.current = [];
       hotelMarkersRef.current.forEach((marker) => marker.remove());
       hotelMarkersRef.current = [];
-
+     
       setPlaces([]);
       setHotels([]);
 
@@ -307,41 +379,105 @@ const Map = () => {
     getCurrentLocation();
   },[]);
   
-
   useEffect(() => {
     if (map.current && places.length > 0) {
       // Clear existing place markers
       placeMarkersRef.current.forEach((marker) => marker.remove());
       placeMarkersRef.current = [];
-
+  
       // Add new place markers
       places.forEach((place) => {
         const marker = new mapboxgl.Marker({ color: "blue" })
           .setLngLat([place.lng, place.lat])
           .setPopup(new mapboxgl.Popup().setText(place.name))
           .addTo(map.current);
+  
+        // Create and append a "Show Direction" button on hover
+        const directionButton = document.createElement("button");
+        directionButton.textContent = "Show Direction";
+        directionButton.style.position = "absolute";
+        directionButton.style.zIndex = 1000;
+        directionButton.style.display = "none";
+        directionButton.style.padding = "5px";
+        directionButton.style.backgroundColor = "#007BFF";
+        directionButton.style.color = "#fff";
+        directionButton.style.border = "none";
+        directionButton.style.borderRadius = "5px";
+  
+        // Attach the button to the marker container
+        marker.getElement().appendChild(directionButton);
+  
+        // Show button on mouseenter
+        marker.getElement().addEventListener("mouseenter", () => {
+          directionButton.style.display = "block";
+        });
+  
+        // Hide button on mouseleave
+        marker.getElement().addEventListener("mouseleave", () => {
+          directionButton.style.display = "none";
+        });
+  
+        // Handle direction button click
+        directionButton.addEventListener("click", () => {
+          showDirection(place);
+        });
+  
         placeMarkersRef.current.push(marker);
       });
     }
   }, [places]);
-
+  
   useEffect(() => {
     if (map.current && hotels.length > 0) {
       // Clear existing hotel markers
       hotelMarkersRef.current.forEach((marker) => marker.remove());
       hotelMarkersRef.current = [];
-
+  
       // Add new hotel markers
       hotels.forEach((hotel) => {
         const marker = new mapboxgl.Marker({ color: "green" })
           .setLngLat([hotel.lng, hotel.lat])
           .setPopup(new mapboxgl.Popup().setText(hotel.name))
           .addTo(map.current);
+  
+        // Create and append a "Show Direction" button on hover
+        const directionButton = document.createElement("button");
+        directionButton.textContent = "Show Direction";
+        directionButton.style.position = "absolute";
+        directionButton.style.zIndex = 1000;
+        directionButton.style.display = "none";
+        directionButton.style.padding = "5px";
+        directionButton.style.backgroundColor = "#007BFF";
+        directionButton.style.color = "#fff";
+        directionButton.style.border = "none";
+        directionButton.style.borderRadius = "5px";
+  
+        // Attach the button to the marker container
+        marker.getElement().appendChild(directionButton);
+  
+        // Show button on mouseenter
+        marker.getElement().addEventListener("mouseenter", () => {
+          directionButton.style.display = "block";
+        });
+  
+        // Hide button on mouseleave
+        marker.getElement().addEventListener("mouseleave", () => {
+          directionButton.style.display = "none";
+        });
+  
+        // Handle direction button click
+        directionButton.addEventListener("click", () => {
+          showDirection(hotel);
+        });
+  
         hotelMarkersRef.current.push(marker);
       });
     }
   }, [hotels]);
 
+
+
+  
   return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
       <div
