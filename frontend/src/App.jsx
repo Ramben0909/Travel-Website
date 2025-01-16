@@ -9,7 +9,6 @@ import Wishlist from './pages/Wishlist';
 import Profile from './component/Profile';
 import Contact from './pages/contact';
 
-
 function App() {
   return (
     <Router>
@@ -23,6 +22,8 @@ function App() {
         <Route path="/Wishlist" element={<Wishlist />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/contact" element={<Contact/>} />
+        <Route path="/Contact" element={<Contact />} />
+
       </Routes>
     </Router>
   );
