@@ -7,7 +7,7 @@ import About from './pages/About';
 import ImageUpload from './pages/Imgupload';
 import Travel from './pages/Travel';
 import Wishlist from './pages/Wishlist';
-
+import Contact from './pages/Contact'
 
 function App() {
   return (
@@ -20,7 +20,7 @@ function App() {
         <Route path="/Imgupload" element={<ImageUpload />} />
         <Route path="/Travel" element={<Travel />} />
         <Route path="/Wishlist" element={<Wishlist />} />
-        
+        <Route path="/Contact" element={<Contact />} />
 
       </Routes>
     </Router>
