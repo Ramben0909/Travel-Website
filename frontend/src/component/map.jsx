@@ -87,6 +87,11 @@ const Map = () => {
     setPlaces([]);
     setHotels([]);
 
+    if(map.current.getLayer("route")){
+      map.current.removeLayer("route");
+      map.current.removeSource("route");
+    }
+
     // Remove all existing markers
         placeMarkersRef.current.forEach((marker) => marker.remove());
         placeMarkersRef.current = [];
@@ -198,6 +203,11 @@ const Map = () => {
 
         setLat(searchLat);
         setLng(searchLng);
+
+        if (map.current.getLayer("route")) {
+          map.current.removeLayer("route");
+          map.current.removeSource("route");
+        }
   
         // Clear state for places and hotels
         setPlaces([]);
@@ -366,6 +376,11 @@ const Map = () => {
       placeMarkersRef.current = [];
       hotelMarkersRef.current.forEach((marker) => marker.remove());
       hotelMarkersRef.current = [];
+
+      if (map.current.getLayer("route")) {
+        map.current.removeLayer("route");
+        map.current.removeSource("route");
+      }
      
       setPlaces([]);
       setHotels([]);
