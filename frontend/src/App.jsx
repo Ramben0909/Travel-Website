@@ -9,8 +9,6 @@ import Wishlist from './pages/Wishlist';
 import Profile from './component/Profile';
 import Contact from './pages/contact';
 
-import Contact from './pages/Contact'
-
 function App() {
   return (
     <Router>
