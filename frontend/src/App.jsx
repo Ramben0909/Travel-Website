@@ -7,7 +7,8 @@ import ImageUpload from './pages/Imgupload';
 import Travel from './pages/Travel';
 import Wishlist from './pages/Wishlist';
 import Profile from './component/Profile';
-import Contact from './pages/contact';
+import Contact from './pages/Contact';
+import TravelPlanner from './pages/TravelPlanner';
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/contact" element={<Contact/>} />
         <Route path="/Contact" element={<Contact />} />
-
+        <Route path="/TravelPlanner" element={<TravelPlanner />} />
       </Routes>
     </Router>
   );

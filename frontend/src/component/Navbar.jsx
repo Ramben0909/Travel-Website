@@ -69,6 +69,14 @@ function Navbar() {
                         >
                             Contact
                         </Link>
+                        <Link
+                            to="/TravelPlanner"
+                            className={`text-gray-800 px-3 py-2 rounded-md text-sm font-medium ${
+                                location.pathname === '/TravelPlanner' ? 'bg-gray-200' : 'hover:bg-gray-100'
+                            }`}
+                        >
+                            Travel Planner
+                        </Link>
                     </div>
 
                     {/* Authentication Buttons */}
@@ -188,6 +196,14 @@ function Navbar() {
                         }`}
                     >
                         Contact
+                    </Link>
+                    <Link
+                        to="/AI"
+                        className={`block text-gray-800 px-3 py-2 rounded-md text-sm font-medium ${
+                            location.pathname === '/Contact' ? 'bg-gray-200' : 'hover:bg-gray-100'
+                        }`}
+                    >
+                        AI
                     </Link>
                 </div>
             </div>
