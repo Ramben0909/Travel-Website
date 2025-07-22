@@ -56,7 +56,7 @@ const travelEssentials = [
   }
 ];
 
-const TravelEssentialsShop = () => {
+const Travel = () => {
   // Cart state management
   const [cart, setCart] = useState([]);
   
@@ -252,4 +252,4 @@ const TravelEssentialsShop = () => {
   );
 };
 
-export default TravelEssentialsShop;
+export default Travel;
