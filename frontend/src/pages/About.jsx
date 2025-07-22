@@ -1,5 +1,4 @@
-import React from 'react';
-import { Github, Linkedin, Mail } from 'lucide-react';
+ import { Mail } from 'lucide-react';
 import Navbar from '../component/Navbar';
 
 // 👉 Import local images
@@ -72,7 +71,7 @@ const About = () => {
                       className="p-3 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-lg"
                       aria-label={`${member.name}'s LinkedIn`}
                     >
-                      <Linkedin className="w-6 h-6" />
+                      
                     </a>
                     <a
                       href={member.github}
@@ -81,7 +80,7 @@ const About = () => {
                       className="p-3 rounded-full bg-gray-600 text-white hover:bg-gray-700 transition-colors shadow-lg"
                       aria-label={`${member.name}'s GitHub`}
                     >
-                      <Github className="w-6 h-6" />
+                      
                     </a>
                     <a
                       href={`mailto:${member.email}`}
@@ -128,15 +127,11 @@ const About = () => {
 
             <h2 className="text-3xl font-bold text-white">Contact Us</h2>
             <p className="text-white text-lg">
-              We'd love to hear your feedback! Email us at <a href="mailto:contact@travelsite.com" className="text-blue-400 underline">contact@travelsite.com</a>
+              We would love to hear your feedback! Email us at <a href="mailto:contact@travelsite.com" className="text-blue-400 underline">contact@travelsite.com</a>
             </p>
           </div>
         </div>
       </div>
-
-
-      </div>
-
     </>
   );
 };
