@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Search, Plus, Trash2 } from 'lucide-react';
 import Navbar from '../component/Navbar';
 
-const PlaceSearchWishlist = () => {
+const Wishlist = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [wishlist, setWishlist] = useState([]);
@@ -146,4 +146,4 @@ const PlaceSearchWishlist = () => {
   );
 };
 
-export default PlaceSearchWishlist;
+export default Wishlist;

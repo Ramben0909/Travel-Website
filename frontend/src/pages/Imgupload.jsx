@@ -23,7 +23,7 @@ const ImageUpload = () => {
     formData.append('image', file);
 
     try {
-      const res = await axios.post('http://localhost:5000/upload', formData, {
+      const res = await axios.post('http://localhost:5002/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setUrl(res.data.url); // Update the URL of the uploaded image
