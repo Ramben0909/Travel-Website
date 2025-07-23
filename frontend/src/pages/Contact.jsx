@@ -1,34 +1,50 @@
 import { useRef, useState } from 'react';
-import emailjs from '@emailjs/browser';
-import Navbar from '../component/Navbarr';
+// import emailjs from '@emailjs/browser';
+import Navbar from '../component/Navbar'
 
-function About() {
+function Contact() {
     const form = useRef();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState({ message: '', isError: false });
 
-    const sendEmail = (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        setSubmitStatus({ message: '', isError: false });
+    const sendEmail = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+  setSubmitStatus({ message: '', isError: false });
 
-        emailjs.sendForm(
-            'service_y9gunbd', // Replace with your EmailJS service ID
-            'template_54257vz', // Replace with your EmailJS template ID
-            form.current,
-            'n-EUUWcTBKZDs2f7_' // Replace with your EmailJS public key
-        )
-            .then((result) => {
-                setSubmitStatus({ message: 'Message sent successfully!', isError: false });
-                form.current.reset();
-            })
-            .catch((error) => {
-                setSubmitStatus({ message: 'Failed to send message. Please try again.', isError: true });
-            })
-            .finally(() => {
-                setIsSubmitting(false);
-            });
-    };
+  const formData = new FormData(form.current);
+  const payload = {
+    name: formData.get('user_name'),
+    email: formData.get('user_email'),
+    question: formData.get('message'),
+    recipientEmail: 'rikdeghuria@gmail.com' // OR dynamically set it
+  };
+
+  try {
+    const response = await fetch('http://localhost:5002/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      setSubmitStatus({ message: data.message, isError: false });
+      form.current.reset();
+    } else {
+      setSubmitStatus({ message: data.message || 'Failed to send message', isError: true });
+    }
+  } catch (error) {
+    console.error('Error sending email:', error);
+    setSubmitStatus({ message: 'Network error. Try again later.', isError: true });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
     return (
         <>
@@ -127,4 +143,4 @@ function About() {
     );
 }
 
-export default About;
+export default Contact;
