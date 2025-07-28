@@ -54,14 +54,6 @@ function Navbar() {
                             Wishlist
                         </Link>
                         <Link
-                            to="/Imgupload"
-                            className={`text-gray-800 px-3 py-2 rounded-md text-sm font-medium ${
-                                location.pathname === '/Imgupload' ? 'bg-gray-200' : 'hover:bg-gray-100'
-                            }`}
-                        >
-                            Imgupload
-                        </Link>
-                        <Link
                             to="/contact"
                             className={`text-gray-800 px-3 py-2 rounded-md text-sm font-medium ${
                                 location.pathname === '/Contact' ? 'bg-gray-200' : 'hover:bg-gray-100'
