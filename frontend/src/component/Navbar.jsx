@@ -38,14 +38,6 @@ function Navbar() {
                             Services
                         </Link>
                         <Link
-                            to="/Travel"
-                            className={`text-gray-800 px-3 py-2 rounded-md text-sm font-medium ${
-                                location.pathname === '/Travel' ? 'bg-gray-200' : 'hover:bg-gray-100'
-                            }`}
-                        >
-                            Travel
-                        </Link>
-                        <Link
                             to="/Wishlist"
                             className={`text-gray-800 px-3 py-2 rounded-md text-sm font-medium ${
                                 location.pathname === '/Wishlist' ? 'bg-gray-200' : 'hover:bg-gray-100'
