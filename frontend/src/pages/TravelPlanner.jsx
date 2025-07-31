@@ -10,9 +10,10 @@ const TravelPlanner = () => {
     const fetchTravelRecommendations = async () => {
         setLoading(true);
         try {
-            const response = await axios.post('https://api.gemini.com/travel/recommendations', {
+            const response = await axios.post('http://localhost:5173/api/recommendations', {
                 destination: destination
             });
+
             setRecommendations(response.data.recommendations);
         } catch (error) {
             console.error("Error fetching travel recommendations:", error);
@@ -55,7 +56,7 @@ const TravelPlanner = () => {
 
                 {loading && (
                     <p className="text-center text-blue-600 font-medium animate-pulse mb-4">
-                        Fetching amazing travel spots...
+                        Fetching items to pack for your trip...
                     </p>
                 )}
 
@@ -65,15 +66,15 @@ const TravelPlanner = () => {
                             key={index} 
                             className="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-shadow duration-300"
                         >
-                            <h2 className="text-xl font-semibold text-blue-700 mb-2">{rec.name}</h2>
-                            <p className="text-gray-600">{rec.description}</p>
+                            <h2 className="text-lg font-bold text-blue-700">{rec.item}</h2>
+                            <p className="text-gray-600">{rec.reason}</p>
                         </div>
                     ))}
                 </div>
 
                 {!loading && recommendations.length === 0 && (
                     <p className="text-center text-gray-500 mt-10">
-                        No recommendations yet. Start your journey by entering a destination!
+                        No recommendations yet. Enter a destination to get started!
                     </p>
                 )}
             </div>
