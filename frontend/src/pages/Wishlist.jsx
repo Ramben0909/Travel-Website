@@ -1,13 +1,22 @@
+// components/Wishlist.js
 import { useState } from 'react';
 import { Search, Plus, Trash2 } from 'lucide-react';
 import Navbar from '../component/Navbar';
+import { useWishlist } from '../context/WishListContext.jsx';
 
 const Wishlist = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Use the wishlist context
+  const { 
+    wishlist, 
+    addToWishlist, 
+    removeFromWishlist, 
+    isInWishlist 
+  } = useWishlist();
 
   const searchPlaces = async () => {
     if (!searchQuery.trim()) return;
@@ -43,14 +52,12 @@ const Wishlist = () => {
     }
   };
 
-  const addToWishlist = (place) => {
-    if (!wishlist.find((item) => item.id === place.id)) {
-      setWishlist([...wishlist, place]);
+  const handleAddToWishlist = (place) => {
+    const success = addToWishlist(place);
+    if (!success) {
+      setError('This place is already in your wishlist.');
+      setTimeout(() => setError(''), 3000);
     }
-  };
-
-  const removeFromWishlist = (placeId) => {
-    setWishlist(wishlist.filter((place) => place.id !== placeId));
   };
 
   return (
@@ -101,8 +108,13 @@ const Wishlist = () => {
                       </p>
                     </div>
                     <button
-                      onClick={() => addToWishlist(place)}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-full"
+                      onClick={() => handleAddToWishlist(place)}
+                      className={`p-2 rounded-full ${
+                        isInWishlist(place.id)
+                          ? 'text-green-600 bg-green-50'
+                          : 'text-blue-600 hover:bg-blue-50'
+                      }`}
+                      disabled={isInWishlist(place.id)}
                     >
                       <Plus size={20} />
                     </button>
@@ -114,7 +126,9 @@ const Wishlist = () => {
         </div>
 
         <div>
-          <h2 className="text-2xl font-bold mb-4">Wishlist</h2>
+          <h2 className="text-2xl font-bold mb-4">
+            Wishlist ({wishlist.length})
+          </h2>
           {wishlist.length === 0 ? (
             <p className="text-gray-500">Your wishlist is empty</p>
           ) : (

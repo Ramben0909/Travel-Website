@@ -6,6 +6,13 @@ const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
   picture: { type: String },
   createdAt: { type: Date, default: Date.now },
+wishlist: [
+  { 
+    name: String,
+    lat: Number,
+    lon: Number,
+  }
+]
 });
 
 export default model('User', userSchema);

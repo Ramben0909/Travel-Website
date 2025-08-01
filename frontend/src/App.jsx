@@ -10,8 +10,11 @@ import Profile from './component/Profile';
 import Contact from './pages/Contact';
 import TravelPlanner from './pages/TravelPlanner';
 
+import { WishlistProvider } from './context/WishListContext'
+
 function App() {
   return (
+     <WishlistProvider>
     <Router>
       <Routes>
         <Route path="/" element={<Homepage />} />
@@ -27,6 +30,7 @@ function App() {
         <Route path="/TravelPlanner" element={<TravelPlanner />} />
       </Routes>
     </Router>
+    </WishlistProvider>
   );
 }
 
