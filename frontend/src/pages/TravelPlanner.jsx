@@ -10,7 +10,7 @@ const TravelPlanner = () => {
     const fetchTravelRecommendations = async () => {
         setLoading(true);
         try {
-            const response = await axios.post('http://localhost:5173/api/recommendations', {
+            const response = await axios.post('http://localhost:5001/api/travel/recommendations', {
                 destination: destination
             });
 
