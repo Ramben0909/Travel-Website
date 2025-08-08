@@ -1,162 +1,71 @@
-// components/Wishlist.js
-import { useState } from 'react';
-import { Search, Plus, Trash2 } from 'lucide-react';
-import Navbar from '../component/Navbar';
-import { useWishlist } from '../context/WishListContext.jsx';
+// Wishlist.jsx
+import { useContext } from "react";
+import { AuthContext } from "../context/authContext";
+import { useWishlist } from "../context/useWishList";
 
 const Wishlist = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const { isLoggedIn, user } = useContext(AuthContext);
+  const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
 
-  // Use the wishlist context
-  const { 
-    wishlist, 
-    addToWishlist, 
-    removeFromWishlist, 
-    isInWishlist 
-  } = useWishlist();
-
-  const searchPlaces = async () => {
-    if (!searchQuery.trim()) return;
-
-    setLoading(true);
-    setError('');
-
-    try {
-      const response = await fetch(
-        `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
-          searchQuery
-        )}&format=json&apiKey=235a929292f84ed0a5587d7ea5eab757`
-      );
-
-      const data = await response.json();
-
-      if (data.results) {
-        setSearchResults(
-          data.results.map((place) => ({
-            id: place.place_id,
-            name: place.formatted,
-            lat: place.lat,
-            lon: place.lon,
-          }))
-        );
-      } else {
-        setError('No results found.');
-      }
-    } catch (error) {
-      setError('Failed to fetch places. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAddToWishlist = (place) => {
-    const success = addToWishlist(place);
-    if (!success) {
-      setError('This place is already in your wishlist.');
-      setTimeout(() => setError(''), 3000);
-    }
-  };
+  if (!isLoggedIn) {
+    return <p>Please log in to view wishlist.</p>;
+  }
 
   return (
-    <>
-      <Navbar />
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Place Search</h2>
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && searchPlaces()}
-                placeholder="Search for a place..."
-                className="w-full p-2 pr-10 border rounded-lg"
-              />
-              <Search
-                className="absolute right-3 top-2.5 text-gray-400"
-                size={20}
-              />
-            </div>
-            <button
-              onClick={searchPlaces}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              disabled={loading}
-            >
-              {loading ? 'Searching...' : 'Search'}
-            </button>
-          </div>
+    <div>
+      <h2>Your Wishlist</h2>
+      {wishlist.length === 0 ? (
+        <p>No items in your wishlist yet.</p>
+      ) : (
+        <ul>
+          {wishlist.map((item) => (
+            <li key={item.id}>
+              <strong>{item.name}</strong>
+              <br />
+              <small>Coordinates: ({item.lat}, {item.lon})</small>
+              <br />
+              <button 
+                onClick={() => removeFromWishlist(item.id)}
+                style={{
+                  backgroundColor: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  padding: '5px 10px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  marginTop: '5px'
+                }}
+              >
+                Remove
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
 
-          {error && <p className="text-red-500 mt-2">{error}</p>}
-
-          {searchResults.length > 0 && (
-            <div className="mt-4">
-              <h3 className="text-lg font-semibold mb-2">Search Results</h3>
-              <div className="space-y-2">
-                {searchResults.map((place) => (
-                  <div
-                    key={place.id}
-                    className="flex justify-between items-center p-3 border rounded-lg"
-                  >
-                    <div>
-                      <p className="font-medium">{place.name}</p>
-                      <p className="text-sm text-gray-500">
-                        Lat: {place.lat.toFixed(4)}, Lon: {place.lon.toFixed(4)}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleAddToWishlist(place)}
-                      className={`p-2 rounded-full ${
-                        isInWishlist(place.id)
-                          ? 'text-green-600 bg-green-50'
-                          : 'text-blue-600 hover:bg-blue-50'
-                      }`}
-                      disabled={isInWishlist(place.id)}
-                    >
-                      <Plus size={20} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div>
-          <h2 className="text-2xl font-bold mb-4">
-            Wishlist ({wishlist.length})
-          </h2>
-          {wishlist.length === 0 ? (
-            <p className="text-gray-500">Your wishlist is empty</p>
-          ) : (
-            <div className="space-y-2">
-              {wishlist.map((place) => (
-                <div
-                  key={place.id}
-                  className="flex justify-between items-center p-3 border rounded-lg"
-                >
-                  <div>
-                    <p className="font-medium">{place.name}</p>
-                    <p className="text-sm text-gray-500">
-                      Lat: {place.lat.toFixed(4)}, Lon: {place.lon.toFixed(4)}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => removeFromWishlist(place.id)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-full"
-                  >
-                    <Trash2 size={20} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </>
+      {/* Test button - you can remove this */}
+      <button
+        onClick={() =>
+          addToWishlist({
+            id: `test-${Date.now()}`,
+            name: "Test Place",
+            lat: 48.8584,
+            lon: 2.2945,
+          })
+        }
+        style={{
+          backgroundColor: '#007bff',
+          color: 'white',
+          border: 'none',
+          padding: '10px 15px',
+          borderRadius: '4px',
+          cursor: 'pointer',
+          marginTop: '10px'
+        }}
+      >
+        Add Test Place
+      </button>
+    </div>
   );
 };
 

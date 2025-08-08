@@ -1,7 +1,4 @@
- 
 import { useRef, useState } from 'react';
-// import emailjs from '@emailjs/browser';
-import Navbar from '../component/Navbar'
 
 function Contact() {
     const form = useRef();
@@ -49,7 +46,7 @@ function Contact() {
 
     return (
         <>
-            <Navbar />
+             
             <div className="sm:p-10 my-auto">
                 <section className="mx-auto max-w-screen-xl md:rounded-md md:border md:shadow-lg">
                     <div className="grid grid-cols-4 text-gray-800 lg:grid-cols-3">

@@ -1,9 +1,9 @@
-import Navbar from '../component/Navbar';
+ 
 
 function Services() {
     return (
         <>
-            <Navbar />
+           
             <section className="py-6 text-blue-900 sm:py-16 lg:py-20 bg-gray-50">
                 <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:max-w-screen-lg lg:px-8">
                     <div className="flex flex-col lg:flex-row">
@@ -40,7 +40,7 @@ function Services() {
                             <div className="bg-white p-6 rounded-lg shadow-md">
                                 <h3 className="text-xl font-semibold mb-2 text-blue-700">Nearby Destinations</h3>
                                 <p className="text-gray-700">
-                                    Get destination recommendations based on your current location. Whether you're in a city or off the grid, we’ll show you the best places within your range.
+                                    Get destination recommendations based on your current location. Whether you are in a city or off the grid, we’ll show you the best places within your range.
                                 </p>
                             </div>
 
@@ -56,7 +56,7 @@ function Services() {
                             <div className="bg-white p-6 rounded-lg shadow-md">
                                 <h3 className="text-xl font-semibold mb-2 text-blue-700">Destination-specific Travel Essentials</h3>
                                 <p className="text-gray-700">
-                                    Know what to pack! Get a smart checklist of travel items tailored to your selected destination's climate and terrain.
+                                    Know what to pack! Get a smart checklist of travel items tailored to your selected destinations climate and terrain.
                                 </p>
                             </div>
 

@@ -1,32 +1,33 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; 
-import Homepage from '../src/pages/homePage';  
-import Services from './pages/Services';
-import About from './pages/About';
-import Wishlist from './pages/Wishlist';
-import Profile from './component/Profile';
-import Contact from './pages/Contact';
-import TravelPlanner from './pages/TravelPlanner';
-
-import { WishlistProvider } from './context/WishListContext'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Homepage from "./pages/homePage";
+import Services from "./pages/Services";
+import About from "./pages/About";
+import Wishlist from "./pages/Wishlist";
+import Profile from "./component/Profile";
+import Contact from "./pages/Contact";
+import TravelPlanner from "./pages/TravelPlanner";
+import { WishlistProvider } from "./context/WishListContext";
+import { AuthProvider } from "./context/authContext";
+import MainLayout from "./layout/MainLayout";
 
 function App() {
   return (
-     <WishlistProvider>
-    <Router>
-      <Routes>
-        <Route path="/" element={<Homepage />} />
-        {/* <Route path="/page1" element={<Page1 />} /> */}
-        <Route path="/services" element={<Services />} />
-        <Route path="/about" element={<About/>} />
-        <Route path="/Wishlist" element={<Wishlist />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/Contact" element={<Contact />} />
-        <Route path="/TravelPlanner" element={<TravelPlanner />} />
-      </Routes>
-    </Router>
-    </WishlistProvider>
+    <AuthProvider>
+      <WishlistProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<MainLayout><Homepage /></MainLayout>} />
+            <Route path="/services" element={<MainLayout><Services /></MainLayout>} />
+            <Route path="/about" element={<MainLayout><About /></MainLayout>} />
+            <Route path="/wishlist" element={<MainLayout><Wishlist /></MainLayout>} />
+            <Route path="/profile" element={<MainLayout><Profile /></MainLayout>} />
+            <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
+            <Route path="/travelplanner" element={<MainLayout><TravelPlanner /></MainLayout>} />
+          </Routes>
+        </Router>
+      </WishlistProvider>
+    </AuthProvider>
   );
 }
 
 export default App;
-

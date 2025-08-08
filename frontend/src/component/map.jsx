@@ -1,9 +1,9 @@
-import { useRef, useState, useEffect } from "react";
+ import { useRef, useState, useEffect } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./Map.css";
 import axios from "axios";
-import { useWishlist } from "../context/WishListContext.jsx";
+import { useWishlist } from "../context/useWishList";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -36,7 +36,7 @@ const Map = () => {
     }
   };
 
-  // ✅ Fetch autocomplete suggestions
+  
   const fetchSuggestions = async (query) => {
     if (!query.trim()) {
       setSuggestions([]);
@@ -187,46 +187,45 @@ const Map = () => {
 
   // ✅ Add Marker Buttons (3 buttons)
   const createMarkerButtons = (marker, place) => {
-    const directionBtn = document.createElement("button");
-    directionBtn.textContent = "Show Direction";
+  const popupDiv = document.createElement("div");
+  popupDiv.style.fontFamily = "sans-serif";
+  popupDiv.style.padding = "5px";
+  popupDiv.style.maxWidth = "200px";
 
-    const wishlistBtn = document.createElement("button");
-    wishlistBtn.textContent = "Add to Wishlist";
+  const nameEl = document.createElement("h4");
+  nameEl.textContent = place.name;
+  nameEl.style.margin = "5px 0";
+  nameEl.style.fontSize = "16px";
 
-    const ratingBtn = document.createElement("button");
-    ratingBtn.textContent = "Rate ★";
+  const starRating = document.createElement("div");
+  const ratingValue = Math.floor(Math.random() * 5) + 1; // Replace with actual rating if available
+  starRating.innerHTML = "★".repeat(ratingValue) + "☆".repeat(5 - ratingValue);
+  starRating.style.color = "#FFD700";
+  starRating.style.fontSize = "16px";
+  starRating.style.marginBottom = "5px";
 
-    [directionBtn, wishlistBtn, ratingBtn].forEach((btn) => {
-      btn.style.display = "none";
-      btn.style.marginTop = "3px";
-      btn.style.padding = "5px";
-      btn.style.borderRadius = "5px";
-      btn.style.border = "none";
-      btn.style.cursor = "pointer";
-      btn.style.backgroundColor = "#007BFF";
-      btn.style.color = "#fff";
-      marker.getElement().appendChild(btn);
-    });
+  const directionBtn = document.createElement("button");
+  directionBtn.textContent = "Show Route";
+  directionBtn.style.cssText = "margin: 2px; padding: 5px; width: 100%; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;";
+  directionBtn.onclick = () => showDirection(place);
 
-    // ✅ Keep Show Direction intact
-    directionBtn.addEventListener("click", () => showDirection(place));
-
-    // ✅ Add to Wishlist
-    wishlistBtn.addEventListener("click", () => {
-      const newPlace = { id: `${place.lat}-${place.lng}`, name: place.name, lat: place.lat, lon: place.lng };
-      if (!isInWishlist(newPlace.id)) addToWishlist(newPlace);
-    });
-
-    // ✅ Rating
-    ratingBtn.addEventListener("click", () => handleRating(place));
-
-    marker.getElement().addEventListener("mouseenter", () => {
-      directionBtn.style.display = wishlistBtn.style.display = ratingBtn.style.display = "block";
-    });
-    marker.getElement().addEventListener("mouseleave", () => {
-      directionBtn.style.display = wishlistBtn.style.display = ratingBtn.style.display = "none";
-    });
+  const wishlistBtn = document.createElement("button");
+  wishlistBtn.textContent = "Add to Wishlist";
+  wishlistBtn.style.cssText = "margin: 2px; padding: 5px; width: 100%; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;";
+  wishlistBtn.onclick = () => {
+    const newPlace = { id: `${place.lat}-${place.lng}`, name: place.name, lat: place.lat, lon: place.lng };
+    if (!isInWishlist(newPlace.id)) addToWishlist(newPlace);
   };
+
+  popupDiv.appendChild(nameEl);
+  popupDiv.appendChild(starRating);
+  popupDiv.appendChild(directionBtn);
+  popupDiv.appendChild(wishlistBtn);
+
+  const popup = new mapboxgl.Popup({ offset: 25 }).setDOMContent(popupDiv);
+  marker.setPopup(popup);
+};
+
 
   const handleSearch = async () => {
     if (!searchText.trim()) return; // Ensure there's text to search
@@ -526,3 +525,4 @@ const Map = () => {
 
 
 export default Map;
+ 

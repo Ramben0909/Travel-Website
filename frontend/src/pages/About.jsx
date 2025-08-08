@@ -1,5 +1,5 @@
  import { Mail } from 'lucide-react';
-import Navbar from '../component/Navbar';
+ 
 
 // 👉 Import local images
 import samanyuImg from '../assets/samanyu.jpg';
@@ -39,7 +39,7 @@ const About = () => {
 
   return (
     <>
-      <Navbar />
+       
       <div className="min-h-screen bg-gradient-to-b from-gray-900 via-black to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
