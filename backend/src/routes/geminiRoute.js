@@ -23,22 +23,25 @@ Respond in JSON format like:
 
     try {
         const response = await axios.post(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.GEMINI_API_KEY}`,
+            'https://api.perplexity.ai/chat/completions',
             {
-                contents: [
+                model: 'mistral-7b-instruct', // or 'llama-3-sonar-large-32k-online'
+                messages: [
                     {
-                        parts: [{ text: prompt }]
+                        role: 'user',
+                        content: prompt
                     }
                 ]
             },
             {
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${process.env.PERPLEXITY_API_KEY}`
                 }
             }
         );
 
-        const modelText = response.data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        const modelText = response.data.choices?.[0]?.message?.content || '';
         const jsonStart = modelText.indexOf('[');
         const jsonEnd = modelText.lastIndexOf(']');
         const jsonText = modelText.slice(jsonStart, jsonEnd + 1);
@@ -47,8 +50,8 @@ Respond in JSON format like:
 
         return res.status(200).json({ recommendations });
     } catch (err) {
-        console.error("Gemini API error:", err.message);
-        return res.status(500).json({ error: 'Failed to get Gemini response' });
+        console.error("Perplexity API error:", err.message);
+        return res.status(500).json({ error: 'Failed to get Perplexity response' });
     }
 });
 
