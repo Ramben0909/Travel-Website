@@ -22,7 +22,7 @@ app.use((req, res, next) => {
 connectDB();
 
 // ✅ Main Routes
-app.use('/', routes);
+app.use('/api', routes);
 
 // ✅ Global error handler
 app.use((err, req, res, next) => {

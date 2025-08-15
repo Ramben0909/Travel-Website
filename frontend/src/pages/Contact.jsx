@@ -1,6 +1,4 @@
- 
-import { useRef, useState } from 'react';
-import Navbar from '../component/Navbar'
+ import { useRef, useState } from 'react';
 
 function Contact() {
     const form = useRef();

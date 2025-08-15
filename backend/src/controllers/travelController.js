@@ -1,8 +1,7 @@
 import axios from 'axios';
 
 export const getTravelRecommendations = async (req, res) => {
-  const { destination } = req.body;
-
+const { destination } = req.body;
   if (!destination) {
     return res.status(400).json({ error: 'Destination is required' });
   }
@@ -19,10 +18,12 @@ Respond in JSON format like:
 `;
 
   try {
+    console.log("Sending prompt to Perplexity:", prompt);
+
     const response = await axios.post(
       'https://api.perplexity.ai/chat/completions',
       {
-        model: 'mistral-7b-instruct',
+        model: 'sonar-pro',  //  Supported model
         messages: [{ role: 'user', content: prompt }]
       },
       {
@@ -34,15 +35,24 @@ Respond in JSON format like:
     );
 
     const modelText = response.data.choices?.[0]?.message?.content || '';
+    console.log("Model response:", modelText);
+
     const jsonStart = modelText.indexOf('[');
     const jsonEnd = modelText.lastIndexOf(']');
     const jsonText = modelText.slice(jsonStart, jsonEnd + 1);
 
-    const recommendations = JSON.parse(jsonText);
+    let recommendations;
+    try {
+      recommendations = JSON.parse(jsonText);
+    } catch (parseErr) {
+      console.error('JSON parse error:', parseErr.message);
+      return res.status(500).json({ error: 'Invalid JSON from model', raw: modelText });
+    }
 
     return res.status(200).json({ recommendations });
+
   } catch (err) {
-    console.error("Perplexity API error:", err.message);
-    return res.status(500).json({ error: 'Failed to get Perplexity response' });
+    console.error("Perplexity API error:", err.response?.status, err.response?.data || err.message);
+    return res.status(500).json({ error: 'Perplexity API request failed' });
   }
 };

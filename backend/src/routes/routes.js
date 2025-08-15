@@ -1,14 +1,22 @@
 import express from 'express';
 import authRoutes from './authRoutes.js';
 import contactRoutes from './contactRoute.js';
-// import travelRoutes from './travelRoutes.js';
 import wishlistRoutes from './wishlistRoutes.js';
+import geminiRoutes from './geminiRoute.js';
 
 const router = express.Router();
 
-router.use('/api/auth', authRoutes);
+console.log('🔍 Registering routes...');
+console.log('Auth routes:', !!authRoutes);
+console.log('Contact routes:', !!contactRoutes);
+console.log('Wishlist routes:', !!wishlistRoutes);
+console.log('Gemini routes:', !!geminiRoutes); // This should log 'true'
+
+router.use('/auth', authRoutes);
 router.use('/contact', contactRoutes);
-// router.use('/api/travel', travelRoutes);
-router.use('/api/wishlist', wishlistRoutes); 
+router.use('/wishlist', wishlistRoutes);
+router.use('/travel', geminiRoutes);
+
+console.log('✅ All routes registered');
 
 export default router;
