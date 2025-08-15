@@ -1,10 +1,8 @@
-// Wishlist.jsx
-import { useContext } from "react";
-import { AuthContext } from "../context/authContext";
+import { useAuthContext } from "../context/useAuthContext";
 import { useWishlist } from "../context/useWishList";
 
 const Wishlist = () => {
-  const { isLoggedIn, user } = useContext(AuthContext);
+  const { isLoggedIn, profile } = useAuthContext();
   const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
 
   if (!isLoggedIn) {
@@ -13,7 +11,8 @@ const Wishlist = () => {
 
   return (
     <div>
-      <h2>Your Wishlist</h2>
+      <h2>{profile?.name ? `${profile.name}'s` : "Your"} Wishlist</h2>
+
       {wishlist.length === 0 ? (
         <p>No items in your wishlist yet.</p>
       ) : (
@@ -22,18 +21,20 @@ const Wishlist = () => {
             <li key={item.id}>
               <strong>{item.name}</strong>
               <br />
-              <small>Coordinates: ({item.lat}, {item.lon})</small>
+              <small>
+                Coordinates: ({item.lat}, {item.lon})
+              </small>
               <br />
-              <button 
+              <button
                 onClick={() => removeFromWishlist(item.id)}
                 style={{
-                  backgroundColor: '#dc3545',
-                  color: 'white',
-                  border: 'none',
-                  padding: '5px 10px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  marginTop: '5px'
+                  backgroundColor: "#dc3545",
+                  color: "white",
+                  border: "none",
+                  padding: "5px 10px",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  marginTop: "5px",
                 }}
               >
                 Remove
@@ -43,7 +44,7 @@ const Wishlist = () => {
         </ul>
       )}
 
-      {/* Test button - you can remove this */}
+      {/* Test button - remove when backend is connected */}
       <button
         onClick={() =>
           addToWishlist({
@@ -54,13 +55,13 @@ const Wishlist = () => {
           })
         }
         style={{
-          backgroundColor: '#007bff',
-          color: 'white',
-          border: 'none',
-          padding: '10px 15px',
-          borderRadius: '4px',
-          cursor: 'pointer',
-          marginTop: '10px'
+          backgroundColor: "#007bff",
+          color: "white",
+          border: "none",
+          padding: "10px 15px",
+          borderRadius: "4px",
+          cursor: "pointer",
+          marginTop: "10px",
         }}
       >
         Add Test Place

@@ -1,6 +1,5 @@
 import { useState, useContext } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import Navbar from "./Navbar";
 import { AuthContext } from "../context/authContext"
 
 function Profile() {
@@ -41,7 +40,6 @@ function Profile() {
 
   return (
     <>
-      <Navbar />
       <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-md shadow-md">
         <h1 className="text-2xl font-bold mb-4">Profile</h1>
         {profile ? (

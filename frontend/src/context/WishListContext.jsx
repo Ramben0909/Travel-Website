@@ -1,20 +1,17 @@
-// src/context/WishListContext.jsx
-import { createContext, useState, useEffect, useContext } from "react";
-import { AuthContext } from "./authContext";
+// src/context/WishlistContext.jsx
+import { createContext, useState, useEffect } from "react";
+import { useAuthContext } from "./useAuthContext";
 
 export const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
-  const { user, isLoggedIn } = useContext(AuthContext);
+  const { user, isLoggedIn } = useAuthContext();
 
-  const isInWishlist = (itemId) => {
-    return wishlist.some((item) => item.id === itemId);
-  };
+  const isInWishlist = (itemId) => wishlist.some((item) => item.id === itemId);
 
   const loadWishlistFromBackend = async () => {
-    if (!user?.sub) return; // Don't fetch if no user
-    
+    if (!user?.sub) return;
     try {
       const res = await fetch(`http://localhost:5000/api/wishlist/${user.sub}`, {
         credentials: "include",
@@ -24,22 +21,19 @@ export const WishlistProvider = ({ children }) => {
       setWishlist(data);
       localStorage.setItem(`wishlist_${user.sub}`, JSON.stringify(data));
     } catch (error) {
-      console.error("Error fetching wishlist from backend:", error);
-      loadWishlistFromLocalStorage(); // Fallback to localStorage
+      console.error("Error fetching wishlist:", error);
+      loadWishlistFromLocalStorage();
     }
   };
 
   const loadWishlistFromLocalStorage = () => {
     const storageKey = user?.sub ? `wishlist_${user.sub}` : "wishlist_guest";
-    const storedWishlist = localStorage.getItem(storageKey);
-    if (storedWishlist) {
-      setWishlist(JSON.parse(storedWishlist));
-    }
+    const stored = localStorage.getItem(storageKey);
+    if (stored) setWishlist(JSON.parse(stored));
   };
 
   const updateWishlistToBackend = async (newWishlist) => {
     if (!user?.sub) return;
-    
     try {
       await fetch(`http://localhost:5000/api/wishlist/${user.sub}`, {
         method: "POST",
@@ -54,12 +48,8 @@ export const WishlistProvider = ({ children }) => {
 
   const updateWishlist = async (newWishlist) => {
     setWishlist(newWishlist);
-    
-    // Save to localStorage with user-specific key
     const storageKey = user?.sub ? `wishlist_${user.sub}` : "wishlist_guest";
     localStorage.setItem(storageKey, JSON.stringify(newWishlist));
-    
-    // Save to backend if user is logged in
     if (isLoggedIn && user?.sub) {
       await updateWishlistToBackend(newWishlist);
     }
@@ -67,33 +57,29 @@ export const WishlistProvider = ({ children }) => {
 
   const addToWishlist = async (item) => {
     if (!isInWishlist(item.id)) {
-      const newWishlist = [...wishlist, item];
-      await updateWishlist(newWishlist);
+      const updated = [...wishlist, item];
+      await updateWishlist(updated);
       alert(`${item.name} added to wishlist!`);
     } else {
-      alert(`${item.name} is already in your wishlist!`);
+      alert(`${item.name} is already in wishlist!`);
     }
   };
 
   const removeFromWishlist = async (itemId) => {
     try {
-      // If user is logged in, call backend DELETE endpoint
       if (isLoggedIn && user?.sub) {
         await fetch(`http://localhost:5000/api/wishlist/${user.sub}/${itemId}`, {
           method: "DELETE",
           credentials: "include",
         });
       }
-      
-      // Update local state
-      const updatedList = wishlist.filter((item) => item.id !== itemId);
-      await updateWishlist(updatedList);
+      const updated = wishlist.filter((item) => item.id !== itemId);
+      await updateWishlist(updated);
     } catch (error) {
       console.error("Error removing from wishlist:", error);
     }
   };
 
-  // Load wishlist when user changes or component mounts
   useEffect(() => {
     if (isLoggedIn && user?.sub) {
       loadWishlistFromBackend();
@@ -102,21 +88,13 @@ export const WishlistProvider = ({ children }) => {
     }
   }, [isLoggedIn, user?.sub]);
 
-  // Clear wishlist when user logs out
   useEffect(() => {
-    if (!isLoggedIn) {
-      setWishlist([]);
-    }
+    if (!isLoggedIn) setWishlist([]);
   }, [isLoggedIn]);
 
   return (
-    <WishlistContext.Provider 
-      value={{ 
-        wishlist, 
-        addToWishlist,
-        removeFromWishlist,
-        isInWishlist
-      }}
+    <WishlistContext.Provider
+      value={{ wishlist, addToWishlist, removeFromWishlist, isInWishlist }}
     >
       {children}
     </WishlistContext.Provider>
