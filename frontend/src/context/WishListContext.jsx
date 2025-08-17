@@ -1,6 +1,8 @@
 // src/context/WishlistContext.jsx
 import { createContext, useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useAuthContext } from "./useAuthContext";
+import 'react-toastify/dist/ReactToastify.css';
 
 export const WishlistContext = createContext();
 
@@ -59,13 +61,23 @@ export const WishlistProvider = ({ children }) => {
     if (!isInWishlist(item.id)) {
       const updated = [...wishlist, item];
       await updateWishlist(updated);
-      alert(`${item.name} added to wishlist!`);
+      toast.success(`${item.name} added to wishlist!`, {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } else {
-      alert(`${item.name} is already in wishlist!`);
+      toast.info(`${item.name} is already in your wishlist!`, {
+        position: "bottom-right",
+        autoClose: 3000,
+      });
     }
   };
 
-  const removeFromWishlist = async (itemId) => {
+  const removeFromWishlist = async (itemId, itemName) => {
     try {
       if (isLoggedIn && user?.sub) {
         await fetch(`http://localhost:5001/api/wishlist/${user.sub}/${itemId}`, {
@@ -75,8 +87,12 @@ export const WishlistProvider = ({ children }) => {
       }
       const updated = wishlist.filter((item) => item.id !== itemId);
       await updateWishlist(updated);
+      toast.success(`${itemName || 'Item'} removed from wishlist`, {
+        position: "bottom-right",
+      });
     } catch (error) {
       console.error("Error removing from wishlist:", error);
+      toast.error("Failed to remove item from wishlist");
     }
   };
 

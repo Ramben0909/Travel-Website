@@ -1,9 +1,10 @@
+// routes/wishlist.js
 import express from 'express';
 import {
   getWishlist,
   addToWishlist,
   removeFromWishlist
-} from '../controllers/wishListController.js';
+} from '../controllers/wishlistController.js';
 
 const router = express.Router();
 

@@ -9,6 +9,7 @@ import TravelPlanner from "./pages/TravelPlanner";
 import { WishlistProvider } from "./context/WishListContext";
 import { AuthProvider } from "./context/authContext";
 import MainLayout from "./layout/MainLayout";
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           </Routes>
         </Router>
       </WishlistProvider>
+      <ToastContainer />
     </AuthProvider>
   );
 }
