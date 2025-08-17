@@ -13,7 +13,7 @@ export const WishlistProvider = ({ children }) => {
   const loadWishlistFromBackend = async () => {
     if (!user?.sub) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/wishlist/${user.sub}`, {
+      const res = await fetch(`http://localhost:5001/api/wishlist/${user.sub}`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -35,7 +35,7 @@ export const WishlistProvider = ({ children }) => {
   const updateWishlistToBackend = async (newWishlist) => {
     if (!user?.sub) return;
     try {
-      await fetch(`http://localhost:5000/api/wishlist/${user.sub}`, {
+      await fetch(`http://localhost:5001/api/wishlist/${user.sub}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -68,7 +68,7 @@ export const WishlistProvider = ({ children }) => {
   const removeFromWishlist = async (itemId) => {
     try {
       if (isLoggedIn && user?.sub) {
-        await fetch(`http://localhost:5000/api/wishlist/${user.sub}/${itemId}`, {
+        await fetch(`http://localhost:5001/api/wishlist/${user.sub}/${itemId}`, {
           method: "DELETE",
           credentials: "include",
         });
