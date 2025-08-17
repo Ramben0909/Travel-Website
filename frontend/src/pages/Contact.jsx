@@ -1,8 +1,6 @@
-
 import { useRef, useState } from 'react';
-import { Mail, Twitter, Linkedin, Send, ArrowRight } from 'lucide-react';
-// import emailjs from '@emailjs/browser';
-import Navbar from '../component/Navbar'
+import { Mail, Twitter, Linkedin, ArrowRight } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 
 function Contact() {
     const form = useRef();
@@ -14,34 +12,20 @@ function Contact() {
         setIsSubmitting(true);
         setSubmitStatus({ message: '', isError: false });
 
-        const formData = new FormData(form.current);
-        const payload = {
-            name: formData.get('user_name'),
-            email: formData.get('user_email'),
-            question: formData.get('message'),
-            recipientEmail: 'rikdeghuria@gmail.com'
-        };
-
         try {
-            const response = await fetch('http://localhost:5001/contact', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
+            const result = await emailjs.sendForm(
+                import.meta.env.VITE_EMAILJS_SERVICE_ID,
+                import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+                form.current,
+                import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+            );
 
-            const data = await response.json();
-
-            if (response.ok) {
-                setSubmitStatus({ message: data.message, isError: false });
-                form.current.reset();
-            } else {
-                setSubmitStatus({ message: data.message || 'Failed to send message', isError: true });
-            }
+            console.log(result.text);
+            setSubmitStatus({ message: 'Message sent successfully!', isError: false });
+            form.current.reset();
         } catch (error) {
-            console.error('Error sending email:', error);
-            setSubmitStatus({ message: 'Network error. Try again later.', isError: true });
+            console.error('EmailJS Error:', error);
+            setSubmitStatus({ message: 'Failed to send message. Try again later.', isError: true });
         } finally {
             setIsSubmitting(false);
         }
@@ -80,10 +64,10 @@ function Contact() {
                                                     <div className="flex-1 min-w-0">
                                                         <p className="text-sm font-medium text-gray-600 mb-1">Email</p>
                                                         <a 
-                                                            href="mailto:abraham@microsoft.com" 
+                                                            href="mailto:your@email"
                                                             className="text-gray-900 font-medium hover:text-blue-600 transition-colors duration-200 break-all"
                                                         >
-                                                            abraham@microsoft.com
+                                                            samanyu04gdse@gmail.com
                                                         </a>
                                                     </div>
                                                 </div>
@@ -100,7 +84,7 @@ function Contact() {
                                                             href="#" 
                                                             className="text-gray-900 font-medium hover:text-sky-600 transition-colors duration-200"
                                                         >
-                                                            @abrahama.real
+                                                            @TravelDest
                                                         </a>
                                                     </div>
                                                 </div>
@@ -113,7 +97,7 @@ function Contact() {
                                                     </div>
                                                     <div className="flex-1 min-w-0">
                                                         <p className="text-sm font-medium text-gray-600 mb-1">LinkedIn</p>
-                                                        <span className="text-gray-900 font-medium">abraham</span>
+                                                        <span className="text-gray-900 font-medium">TravelDest</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -164,7 +148,7 @@ function Contact() {
                                                     type="email"
                                                     required
                                                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 bg-gray-50 focus:bg-white"
-                                                    placeholder="your@email.com"
+                                                    placeholder="your@email"
                                                 />
                                             </div>
                                         </div>
@@ -229,4 +213,4 @@ function Contact() {
     );
 }
 
-export default Contact; 
+export default Contact;
