@@ -18,22 +18,22 @@ const About = () => {
       email: "rikdeghuria@gmail.com"
     },
     {
-      name: "Marcus Rodriguez",
-      role: "UI/UX Designer",
-      description: "Creative designer with 5+ years of experience in crafting beautiful and intuitive user interfaces. Focused on accessibility and user-centered design.",
+      name: "Biplab Mahato",
+      role: "Full Stack Developer",
+      description: "Passionate about technology and innovation, I have hands-on experience with the MERN stack and a solid foundation in data science tools like NumPy, Pandas, and scikit-learn, as well as visualization with Power BI. I am proficient in programming languages such as C, C++, Java, and Python. Currently, I'm exploring AWS to enhance my cloud computing skills. Additionally, I enjoy solving problems on LeetCode using C++, sharpening my competitive programming abilities.",
       image: biplabImg,
-      linkedin: "https://linkedin.com/in/marcusrodriguez",
-      github: "https://github.com/marcusrodriguez",
-      email: "marcus.rodriguez@example.com"
+      linkedin: "https://www.linkedin.com/in/biplab-mahato-68b34a247",
+      github: "https://github.com/biplabmahato",
+      email: "jbiplabmahato@gmail.com"
     },
     {
-      name: "Alex Patel",
-      role: "Backend Engineer",
-      description: "System architecture specialist with expertise in building high-performance APIs and microservices. Strong background in Python and Go.",
+      name: "Ritam Bhattachraya",
+      role: "Full Stack Developer",
+      description: "Passionate about creating scalable web applications and solving complex problems. Specialized in React, Node.js, and cloud architecture",
       image: ritamImg,
-      linkedin: "https://linkedin.com/in/alexpatel",
-      github: "https://github.com/alexpatel",
-      email: "alex.patel@example.com"
+      linkedin: "https://www.linkedin.com/in/ritam-bhattacharya-463248263/",
+      github: "https://github.com/Ramben0909",
+      email: "ritam.bhattacharya2022@iem.edu.in"
     }
   ];
 
