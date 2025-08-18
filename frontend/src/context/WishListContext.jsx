@@ -6,6 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export const WishlistContext = createContext();
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
   const { user, isLoggedIn } = useAuthContext();
@@ -15,7 +17,7 @@ export const WishlistProvider = ({ children }) => {
   const loadWishlistFromBackend = async () => {
     if (!user?.sub) return;
     try {
-      const res = await fetch(`http://localhost:5001/api/wishlist/${user.sub}`, {
+      const res = await fetch(`${API_BASE_URL}/api/wishlist/${user.sub}`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -37,7 +39,7 @@ export const WishlistProvider = ({ children }) => {
   const updateWishlistToBackend = async (newWishlist) => {
     if (!user?.sub) return;
     try {
-      await fetch(`http://localhost:5001/api/wishlist/${user.sub}`, {
+      await fetch(`${API_BASE_URL}/api/wishlist/${user.sub}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -80,7 +82,7 @@ export const WishlistProvider = ({ children }) => {
   const removeFromWishlist = async (itemId, itemName) => {
     try {
       if (isLoggedIn && user?.sub) {
-        await fetch(`http://localhost:5001/api/wishlist/${user.sub}/${itemId}`, {
+        await fetch(`${API_BASE_URL}/api/wishlist/${user.sub}/${itemId}`, {
           method: "DELETE",
           credentials: "include",
         });
