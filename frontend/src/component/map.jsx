@@ -117,6 +117,7 @@ const Map = () => {
       const { minLat, maxLat, minLon, maxLon } = getBoundingBox(latitude, longitude, 150);
       const apiUrl = `https://api.geoapify.com/v2/places?categories=tourism&filter=rect:${minLon},${minLat},${maxLon},${maxLat}&limit=50&apiKey=235a929292f84ed0a5587d7ea5eab757`;
       const res = await axios.get(apiUrl);
+      console.log(res);
       setPlaces(
         res.data.features.map((f) => ({
           name: f.properties.name,
@@ -133,6 +134,7 @@ const Map = () => {
     try {
       const url = `https://api.geoapify.com/v2/places?categories=accommodation.hotel&filter=circle:${longitude},${latitude},6000&limit=20&apiKey=235a929292f84ed0a5587d7ea5eab757`;
       const res = await axios.get(url);
+      console.log(res);
       setHotels(
         res.data.features.map((f) => ({
           name: f.properties.name || "Unnamed Hotel",
@@ -213,8 +215,8 @@ const Map = () => {
   wishlistBtn.textContent = "Add to Wishlist";
   wishlistBtn.style.cssText = "margin: 2px; padding: 5px; width: 100%; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;";
   wishlistBtn.onclick = () => {
-    const newPlace = { id: `${place.lat}-${place.lng}`, name: place.name, lat: place.lat, lon: place.lng };
-    if (!isInWishlist(newPlace.id)) addToWishlist(newPlace);
+    const newPlace = { id: `${place.lat}-${place.lng}`, name: place.name, lat: place.lat, lon: place.lng, categories:place.categories };
+    if (!isInWishlist(newPlace.id && newPlace.categories=='tourism')) addToWishlist(newPlace);
   };
 
   popupDiv.appendChild(nameEl);

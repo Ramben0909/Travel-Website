@@ -10,9 +10,10 @@ import { WishlistProvider } from "./context/WishListContext";
 import { AuthProvider } from "./context/authContext";
 import MainLayout from "./layout/MainLayout";
 import { ToastContainer } from 'react-toastify';
-
+import Landing from "./pages/Landing"
 function App() {
   return (
+    <>
     <AuthProvider>
       <WishlistProvider>
         <Router>
@@ -29,6 +30,8 @@ function App() {
       </WishlistProvider>
       <ToastContainer />
     </AuthProvider>
+    <Landing/>
+    </>
   );
 }
 
