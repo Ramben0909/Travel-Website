@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node backend/server.js",
     "dev": "nodemon backend/server.js"
+    "build": "echo 'No build step required'"
   },
   "keywords": [],
   "author": "",
