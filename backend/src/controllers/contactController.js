@@ -1,3 +1,4 @@
+//contactController.js
 import nodemailer from 'nodemailer';
 
 export const sendContactMessage = async (req, res) => {

@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
+
+
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { MapPin, Search, Plane, Package } from 'lucide-react';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const TravelPlanner = () => {
     const location = useLocation();
@@ -25,7 +29,7 @@ const TravelPlanner = () => {
     const fetchTravelRecommendations = async () => {
         setLoading(true);
         try {
-            const response = await axios.post('http://localhost:5001/api/travel/recommendations', {
+            const response = await axios.post(`${API_BASE_URL}/api/travel/recommendations`, {
                 destination: destination
             });
 
@@ -40,7 +44,7 @@ const TravelPlanner = () => {
     const fetchTravelRecommendationsForPlace = async (place) => {
         setLoading(true);
         try {
-            const response = await axios.post('http://localhost:5001/api/travel/recommendations', {
+            const response = await axios.post(`${API_BASE_URL}/api/travel/recommendations`, {
                 destination: place
             });
 

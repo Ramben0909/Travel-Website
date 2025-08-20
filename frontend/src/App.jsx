@@ -9,25 +9,48 @@ import TravelPlanner from "./pages/TravelPlanner";
 import { WishlistProvider } from "./context/WishListContext";
 import { AuthProvider } from "./context/AuthContext";
 import MainLayout from "./layout/MainLayout";
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer } from "react-toastify";
+import Landing from "./pages/Landing";
+import { useAuth0 } from "@auth0/auth0-react";
+import "react-toastify/dist/ReactToastify.css";
+
+function AppContent() {
+  const { isAuthenticated, isLoading } = useAuth0();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen text-xl">
+        Loading...
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Landing />;
+  }
+
+  return (
+    <Routes>
+      <Route path="/" element={<MainLayout><Homepage /></MainLayout>} />
+      <Route path="/services" element={<MainLayout><Services /></MainLayout>} />
+      <Route path="/about" element={<MainLayout><About /></MainLayout>} />
+      <Route path="/wishlist" element={<MainLayout><Wishlist /></MainLayout>} />
+      <Route path="/profile" element={<MainLayout><Profile /></MainLayout>} />
+      <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
+      <Route path="/travelplanner" element={<MainLayout><TravelPlanner /></MainLayout>} />
+    </Routes>
+  );
+}
 
 function App() {
   return (
     <AuthProvider>
       <WishlistProvider>
         <Router>
-          <Routes>
-            <Route path="/" element={<MainLayout><Homepage /></MainLayout>} />
-            <Route path="/services" element={<MainLayout><Services /></MainLayout>} />
-            <Route path="/about" element={<MainLayout><About /></MainLayout>} />
-            <Route path="/wishlist" element={<MainLayout><Wishlist /></MainLayout>} />
-            <Route path="/profile" element={<MainLayout><Profile /></MainLayout>} />
-            <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
-            <Route path="/travelplanner" element={<MainLayout><TravelPlanner /></MainLayout>} />
-          </Routes>
+          <AppContent />
+          <ToastContainer />
         </Router>
       </WishlistProvider>
-      <ToastContainer />
     </AuthProvider>
   );
 }
