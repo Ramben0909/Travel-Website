@@ -1,19 +1,18 @@
 /* eslint-disable no-unused-vars */
-import { createRoot } from 'react-dom/client'
-import App from './App.jsx'
-import { Auth0Provider } from '@auth0/auth0-react';
-import './index.css'
+import { createRoot } from "react-dom/client";
+import App from "./App.jsx";
+import { Auth0Provider } from "@auth0/auth0-react";
+import "./index.css";
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <Auth0Provider
     domain="dev-lqqb867tohygzl1e.us.auth0.com"
     clientId="dXNXyvqrroVWTIXSxj8X7Qqsaj2Pvs8U"
     authorizationParams={{
-      redirect_uri: window.location.origin
+      redirect_uri: window.location.origin,
     }}
+    cacheLocation="localstorage"   // 👈 persist session across refresh
   >
     <App />
-  </Auth0Provider>,
-)
-
-
+  </Auth0Provider>
+);
