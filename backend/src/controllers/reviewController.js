@@ -1,70 +1,34 @@
-import Review from "../models/reviewModel.js";
+import { getReviewModel } from "../models/Review.js";
 
-// ✅ GET reviews
-export const getReviews = async (req, res) => {
-  console.log("👉 inside getReviews controller");
-
+export const createReview = async (req, res) => {
+  const Review = getReviewModel(); // ✅ get model from reviewConn
   try {
-    const reviews = await Review.find().sort({ createdAt: -1 }).limit(5);
+    const { userName, review, rating } = req.body;
 
-    console.log("👉 Reviews fetched:", reviews);
-
-    if (!reviews || reviews.length === 0) {
-      return res.status(200).json({
-        success: true,
-        reviews: [],
-        message: "No reviews found",
-      });
+    if (!userName || !review || !rating) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
-    res.status(200).json({
-      success: true,
-      reviews,
-    });
-  } catch (err) {
-    console.error("❌ Error in getReviews:", err.message);
-    res.status(500).json({
-      success: false,
-      message: "Server error while fetching reviews",
-      error: err.message,
-    });
+    const newReview = new Review({ userName, review, rating });
+    await newReview.save();
+
+    res.status(201).json({ message: "Review added successfully", review: newReview });
+  } catch (error) {
+    console.error("❌ Error creating review:", error);
+    res.status(500).json({ error: "Failed to create review" });
   }
 };
 
-// ✅ POST add review
-export const createReview = async (req, res) => {
-  console.log("👉 inside createReview controller, body:", req.body);
-
+export const getReviews = async (req, res) => {
+  const Review = getReviewModel();
   try {
-    const { userName, rating, review } = req.body;
+    console.log("👉 inside getReviews controller");
 
-    if (!userName || !rating || !review) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields (userName, rating, review) are required",
-      });
-    }
+    const reviews = await Review.find().sort({ createdAt: -1 }).limit(5);
 
-    const newReview = new Review({
-      userName,
-      rating,
-      review,
-    });
-
-    const savedReview = await newReview.save();
-
-    console.log("✅ Review saved:", savedReview);
-
-    res.status(201).json({
-      success: true,
-      review: savedReview,
-    });
-  } catch (err) {
-    console.error("❌ Error in createReview:", err.message);
-    res.status(500).json({
-      success: false,
-      message: "Server error while creating review",
-      error: err.message,
-    });
+    res.status(200).json({ reviews }); // ✅ must send JSON object
+  } catch (error) {
+    console.error("❌ Error fetching reviews:", error);
+    res.status(500).json({ error: "Failed to fetch reviews" });
   }
 };

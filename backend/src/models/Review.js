@@ -1,13 +1,19 @@
 import mongoose from "mongoose";
+import { reviewConn } from "../config/db.js";
 
 const reviewSchema = new mongoose.Schema(
   {
-    username: { type: String, required: true, trim: true },
+    userName: { type: String, required: true },
     rating: { type: Number, required: true, min: 1, max: 5 },
-    review: { type: String, required: true, trim: true }
+    review: { type: String, required: true },
   },
   { timestamps: true }
 );
 
-const Review = mongoose.model("Review", reviewSchema);
-export default Review;
+// ✅ Wrap model creation in a function
+export const getReviewModel = () => {
+  if (!reviewConn) {
+    throw new Error("❌ reviewConn not initialized yet. Did you call connectDBs()?");
+  }
+  return reviewConn.model("Review", reviewSchema);
+};
