@@ -1,9 +1,11 @@
- import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./Map.css";
 import axios from "axios";
 import { useWishlist } from "../context/useWishList";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -36,7 +38,6 @@ const Map = () => {
     }
   };
 
-  
   const fetchSuggestions = async (query) => {
     if (!query.trim()) {
       setSuggestions([]);
@@ -45,7 +46,7 @@ const Map = () => {
     try {
       const apiUrl = `https://api.geoapify.com/v1/geocode/autocomplete?text=${encodeURIComponent(
         query
-      )}&apiKey=235a929292f84ed0a5587d7ea5eab757`;
+      )}&apiKey=${import.meta.env.VITE_GEOAPIFY_API_KEY}`;
       const res = await axios.get(apiUrl);
       if (res.data?.features) {
         setSuggestions(
@@ -74,9 +75,8 @@ const Map = () => {
 
     searchMarkerRef.current = searchMarker;
 
-
     map.current.flyTo({ center: [lng, lat], essential: true });
-  
+
     setLat(lat);
     setLng(lng);
     setSearchText(name);
@@ -84,17 +84,16 @@ const Map = () => {
     setPlaces([]);
     setHotels([]);
 
-
-    if(map.current.getLayer("route")){
+    if (map.current.getLayer("route")) {
       map.current.removeLayer("route");
       map.current.removeSource("route");
     }
 
     // Remove all existing markers
-        placeMarkersRef.current.forEach((marker) => marker.remove());
-        placeMarkersRef.current = [];
-        hotelMarkersRef.current.forEach((marker) => marker.remove());
-        hotelMarkersRef.current=[];
+    placeMarkersRef.current.forEach((marker) => marker.remove());
+    placeMarkersRef.current = [];
+    hotelMarkersRef.current.forEach((marker) => marker.remove());
+    hotelMarkersRef.current = [];
 
     fetchTouristPlaceDetails(lat, lng);
     fetchHotelPlaces(lat, lng);
@@ -114,8 +113,12 @@ const Map = () => {
 
   const fetchTouristPlaceDetails = async (latitude, longitude) => {
     try {
-      const { minLat, maxLat, minLon, maxLon } = getBoundingBox(latitude, longitude, 150);
-      const apiUrl = `https://api.geoapify.com/v2/places?categories=tourism&filter=rect:${minLon},${minLat},${maxLon},${maxLat}&limit=50&apiKey=235a929292f84ed0a5587d7ea5eab757`;
+      const { minLat, maxLat, minLon, maxLon } = getBoundingBox(
+        latitude,
+        longitude,
+        150
+      );
+      const apiUrl = `https://api.geoapify.com/v2/places?categories=tourism&filter=rect:${minLon},${minLat},${maxLon},${maxLat}&limit=50&apiKey=${import.meta.env.VITE_GEOAPIFY_API_KEY}`;
       const res = await axios.get(apiUrl);
       console.log(res);
       setPlaces(
@@ -125,14 +128,14 @@ const Map = () => {
           lng: f.geometry.coordinates[0],
         }))
       );
-    } catch (error){
-      console.log("error",error);
+    } catch (error) {
+      console.log("error", error);
     }
   };
 
   const fetchHotelPlaces = async (latitude, longitude) => {
     try {
-      const url = `https://api.geoapify.com/v2/places?categories=accommodation.hotel&filter=circle:${longitude},${latitude},6000&limit=20&apiKey=235a929292f84ed0a5587d7ea5eab757`;
+      const url = `https://api.geoapify.com/v2/places?categories=accommodation.hotel&filter=circle:${longitude},${latitude},6000&limit=20&apiKey=${import.meta.env.VITE_GEOAPIFY_API_KEY}`;
       const res = await axios.get(url);
       console.log(res);
       setHotels(
@@ -142,11 +145,10 @@ const Map = () => {
           lng: f.geometry.coordinates[0],
         }))
       );
-    } catch (error){
-      console.log("error",error);
+    } catch (error) {
+      console.log("error", error);
     }
   };
-
 
   // ✅ Show Direction function (kept intact)
   const showDirection = async (place) => {
@@ -156,7 +158,7 @@ const Map = () => {
     const destLat = place.lat;
     const destLng = place.lng;
     try {
-      const url = `https://api.geoapify.com/v1/routing?waypoints=${originLat},${originLng}|${destLat},${destLng}&mode=drive&apiKey=235a929292f84ed0a5587d7ea5eab757`;
+      const url = `https://api.geoapify.com/v1/routing?waypoints=${originLat},${originLng}|${destLat},${destLng}&mode=drive&apiKey=${import.meta.env.VITE_GEOAPIFY_API_KEY}`;
       const res = await axios.get(url);
 
       if (res.data?.features?.length) {
@@ -182,85 +184,94 @@ const Map = () => {
 
         map.current.flyTo({ center: [destLng, destLat], essential: true });
       }
-    } catch (error){
-      console.log("error",error);
+    } catch (error) {
+      console.log("error", error);
     }
   };
 
-  // ✅ Add Marker Buttons (3 buttons)
-  const createMarkerButtons = (marker, place) => {
-  const popupDiv = document.createElement("div");
-  popupDiv.style.fontFamily = "sans-serif";
-  popupDiv.style.padding = "5px";
-  popupDiv.style.maxWidth = "200px";
+  // ✅ Add Marker Buttons (restricted wishlist for hotels)
+  const createMarkerButtons = (marker, place, type = "place") => {
+    const popupDiv = document.createElement("div");
+    popupDiv.style.fontFamily = "sans-serif";
+    popupDiv.style.padding = "5px";
+    popupDiv.style.maxWidth = "200px";
 
-  const nameEl = document.createElement("h4");
-  nameEl.textContent = place.name;
-  nameEl.style.margin = "5px 0";
-  nameEl.style.fontSize = "16px";
+    const nameEl = document.createElement("h4");
+    nameEl.textContent = place.name;
+    nameEl.style.margin = "5px 0";
+    nameEl.style.fontSize = "16px";
 
-  const starRating = document.createElement("div");
-  const ratingValue = Math.floor(Math.random() * 5) + 1; // Replace with actual rating if available
-  starRating.innerHTML = "★".repeat(ratingValue) + "☆".repeat(5 - ratingValue);
-  starRating.style.color = "#FFD700";
-  starRating.style.fontSize = "16px";
-  starRating.style.marginBottom = "5px";
+    const starRating = document.createElement("div");
+    const ratingValue = Math.floor(Math.random() * 5) + 1;
+    starRating.innerHTML =
+      "★".repeat(ratingValue) + "☆".repeat(5 - ratingValue);
+    starRating.style.color = "#FFD700";
+    starRating.style.fontSize = "16px";
+    starRating.style.marginBottom = "5px";
 
-  const directionBtn = document.createElement("button");
-  directionBtn.textContent = "Show Route";
-  directionBtn.style.cssText = "margin: 2px; padding: 5px; width: 100%; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;";
-  directionBtn.onclick = () => showDirection(place);
+    const directionBtn = document.createElement("button");
+    directionBtn.textContent = "Show Route";
+    directionBtn.style.cssText =
+      "margin: 2px; padding: 5px; width: 100%; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;";
+    directionBtn.onclick = () => showDirection(place);
 
-  const wishlistBtn = document.createElement("button");
-  wishlistBtn.textContent = "Add to Wishlist";
-  wishlistBtn.style.cssText = "margin: 2px; padding: 5px; width: 100%; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;";
-  wishlistBtn.onclick = () => {
-    const newPlace = { id: `${place.lat}-${place.lng}`, name: place.name, lat: place.lat, lon: place.lng, categories:place.categories };
-    if (!isInWishlist(newPlace.id && newPlace.categories=='tourism')) addToWishlist(newPlace);
+    const wishlistBtn = document.createElement("button");
+    wishlistBtn.textContent = "Add to Wishlist";
+    wishlistBtn.style.cssText =
+      "margin: 2px; padding: 5px; width: 100%; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;";
+    wishlistBtn.onclick = () => {
+      if (type === "hotel") {
+        toast.error("Hotels cannot be wishlisted ❌");
+        return;
+      }
+      const newPlace = {
+        id: `${place.lat}-${place.lng}`,
+        name: place.name,
+        lat: place.lat,
+        lon: place.lng,
+      };
+      if (!isInWishlist(newPlace.id)) {
+        addToWishlist(newPlace);
+        // toast.success(`${place.name} added to wishlist ✅`);
+      }
+    };
+
+    popupDiv.appendChild(nameEl);
+    popupDiv.appendChild(starRating);
+    popupDiv.appendChild(directionBtn);
+    popupDiv.appendChild(wishlistBtn);
+
+    const popup = new mapboxgl.Popup({ offset: 25 }).setDOMContent(popupDiv);
+    marker.setPopup(popup);
   };
 
-  popupDiv.appendChild(nameEl);
-  popupDiv.appendChild(starRating);
-  popupDiv.appendChild(directionBtn);
-  popupDiv.appendChild(wishlistBtn);
-
-  const popup = new mapboxgl.Popup({ offset: 25 }).setDOMContent(popupDiv);
-  marker.setPopup(popup);
-};
-
-
   const handleSearch = async () => {
-    if (!searchText.trim()) return; // Ensure there's text to search
-  
+    if (!searchText.trim()) return;
     const apiUrl = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
       searchText
-    )}&format=json&apiKey=235a929292f84ed0a5587d7ea5eab757`;
-  
+    )}&format=json&apiKey=${import.meta.env.VITE_GEOAPIFY_API_KEY}`;
+
     try {
       const response = await axios.get(apiUrl);
-  
+
       if (response.data && response.data.results.length > 0) {
         const result = response.data.results[0];
         const searchLng = result.lon;
         const searchLat = result.lat;
-  
-        // Remove previous search marker
+
         if (searchMarkerRef.current) {
           searchMarkerRef.current.remove();
         }
-
         if (markerRef.current) {
           markerRef.current.remove();
         }
-  
-        // Add new search marker
+
         const searchMarker = new mapboxgl.Marker({ color: "red" })
           .setLngLat([searchLng, searchLat])
           .setPopup(new mapboxgl.Popup().setText(searchText))
           .addTo(map.current);
         searchMarkerRef.current = searchMarker;
 
-        // Update map center without reinitializing
         map.current.flyTo({
           center: [searchLng, searchLat],
           essential: true,
@@ -273,35 +284,33 @@ const Map = () => {
           map.current.removeLayer("route");
           map.current.removeSource("route");
         }
-  
-        // Clear state for places and hotels
+
         setPlaces([]);
         setHotels([]);
-  
-        // Remove all existing markers
-      placeMarkersRef.current.forEach((marker) => marker.remove());
-      placeMarkersRef.current = [];
-      hotelMarkersRef.current.forEach((marker) => marker.remove());
-      hotelMarkersRef.current = [];
-  
-        // Fetch new places and hotels
+
+        placeMarkersRef.current.forEach((marker) => marker.remove());
+        placeMarkersRef.current = [];
+        hotelMarkersRef.current.forEach((marker) => marker.remove());
+        hotelMarkersRef.current = [];
+
         fetchTouristPlaceDetails(searchLat, searchLng);
         fetchHotelPlaces(searchLat, searchLng);
       } else {
         alert("No results found for the entered location.");
       }
     } catch (error) {
-      console.error("Error searching for location:", error.response?.data || error.message);
+      console.error(
+        "Error searching for location:",
+        error.response?.data || error.message
+      );
     }
   };
-  
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleSearch();
     }
   };
-
-
 
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
@@ -317,7 +326,9 @@ const Map = () => {
         },
         (error) => {
           console.error("Geolocation error:", error);
-          alert("Unable to retrieve your location. Showing default location.");
+          alert(
+            "Unable to retrieve your location. Showing default location."
+          );
           initializeMap(lng, lat);
           fetchTouristPlaceDetails(lat, lng);
         }
@@ -343,9 +354,7 @@ const Map = () => {
     markerRef.current = userMarker;
 
     const geolocateControl = new mapboxgl.GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: true,
-      },
+      positionOptions: { enableHighAccuracy: true },
       trackUserLocation: true,
       showUserLocation: true,
     });
@@ -355,26 +364,19 @@ const Map = () => {
       const { lng, lat } = e.lngLat;
       setNewPlace({ lng, lat });
 
-      if (markerRef.current) {
-        markerRef.current.remove();
-      }
+      if (markerRef.current) markerRef.current.remove();
+      if (searchMarkerRef.current) searchMarkerRef.current.remove();
 
-      if (searchMarkerRef.current) {
-        searchMarkerRef.current.remove();
-      }
       const marker = new mapboxgl.Marker({ color: "tomato" })
         .setLngLat([lng, lat])
         .addTo(map.current);
       markerRef.current = marker;
 
-      map.current.flyTo({
-        center: [lng, lat],
-        essential: true,
-      });
+      map.current.flyTo({ center: [lng, lat], essential: true });
       setZoom(12);
       setLat(lat);
       setLng(lng);
-      // Clear previous markers
+
       placeMarkersRef.current.forEach((marker) => marker.remove());
       placeMarkersRef.current = [];
       hotelMarkersRef.current.forEach((marker) => marker.remove());
@@ -384,10 +386,9 @@ const Map = () => {
         map.current.removeLayer("route");
         map.current.removeSource("route");
       }
-     
+
       setPlaces([]);
       setHotels([]);
-
       fetchTouristPlaceDetails(lat, lng);
       fetchHotelPlaces(lat, lng);
     });
@@ -395,7 +396,7 @@ const Map = () => {
 
   useEffect(() => {
     getCurrentLocation();
-  },[]);
+  }, []);
 
   // ✅ Add Markers for Places
   useEffect(() => {
@@ -409,7 +410,7 @@ const Map = () => {
           .setPopup(new mapboxgl.Popup().setText(place.name))
           .addTo(map.current);
 
-        createMarkerButtons(marker, place);
+        createMarkerButtons(marker, place, "place");
         placeMarkersRef.current.push(marker);
       });
     }
@@ -427,24 +428,13 @@ const Map = () => {
           .setPopup(new mapboxgl.Popup().setText(hotel.name))
           .addTo(map.current);
 
-        createMarkerButtons(marker, hotel);
+        createMarkerButtons(marker, hotel, "hotel");
         hotelMarkersRef.current.push(marker);
       });
     }
   }, [hotels]);
 
-  // useEffect(() => {
-  //   if (!map.current) {
-  //     map.current = new mapboxgl.Map({
-  //       container: mapContainer.current,
-  //       style: "mapbox://styles/mapbox/streets-v11",
-  //       center: [lng, lat],
-  //       zoom,
-  //     });
-  //   }
-  // }, []);
-
- return (
+  return (
     <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
       <div
         style={{
@@ -462,8 +452,9 @@ const Map = () => {
           type="text"
           placeholder="Search for a place"
           value={searchText}
-          onChange={(e) => {setSearchText(e.target.value),
-            fetchSuggestions(e.target.value)
+          onChange={(e) => {
+            setSearchText(e.target.value);
+            fetchSuggestions(e.target.value);
           }}
           onKeyDown={handleKeyDown}
           style={{ padding: "5px", marginRight: "5px" }}
@@ -525,6 +516,4 @@ const Map = () => {
   );
 };
 
-
 export default Map;
- 

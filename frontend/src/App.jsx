@@ -7,7 +7,7 @@ import Profile from "./component/Profile";
 import Contact from "./pages/Contact";
 import TravelPlanner from "./pages/TravelPlanner";
 import { WishlistProvider } from "./context/WishListContext";
-import { AuthProvider } from "./context/authContext";
+import { AuthProvider } from "./context/AuthContext";
 import MainLayout from "./layout/MainLayout";
 import { ToastContainer } from "react-toastify";
 import Landing from "./pages/Landing";
