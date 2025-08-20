@@ -1,17 +1,24 @@
-import { connect } from 'mongoose';
-import dotenv from 'dotenv';
+import mongoose from "mongoose";
+import dotenv from "dotenv";
 
-const connectDB = async () => {
+dotenv.config();
+
+let userConn;
+let reviewConn;
+
+export const connectDBs = async () => {
   try {
-    await connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('MongoDB Connected');
+    // 🔹 Connect to Users DB
+    userConn = await mongoose.createConnection(process.env.MONGO_URI_USERS, {});
+    console.log(`✅ Connected to Users DB: ${userConn.name}`);
+
+    // 🔹 Connect to Reviews DB
+    reviewConn = await mongoose.createConnection(process.env.MONGO_URI_REVIEWS, {});
+    console.log(`✅ Connected to Reviews DB: ${reviewConn.name}`);
   } catch (err) {
-    console.error(err);
+    console.error("❌ DB connection error:", err);
     process.exit(1);
   }
 };
 
-export default connectDB;
+export { userConn, reviewConn };

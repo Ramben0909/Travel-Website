@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './src/config/db.js';
-import routes from './src/routes/routes.js'; // ✅ Central routes file
+import routes from './src/routes/routes.js'; 
 
 dotenv.config();
 
@@ -11,13 +11,12 @@ const app = express();
 // ✅ Middleware
 app.use(
   cors({
-    origin: "http://localhost:5173", // your frontend URL
-    credentials: true,              // allow cookies/credentials
+    origin: process.env.FRONTEND_URL || "http://localhost:5173", 
+    credentials: true, // allow cookies/credentials
   })
 );
 app.use(express.json());
 
-// ✅ Request logger
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
   next();
@@ -29,10 +28,12 @@ connectDB();
 // ✅ Main Routes
 app.use('/api', routes);
 
-// ✅ Global error handler
 app.use((err, req, res, next) => {
-  console.error('Global Error:', err);
-  res.status(500).json({ message: 'Internal Server Error', error: err.message });
+  console.error('Global Error:', err.stack || err);
+  res.status(500).json({ 
+    message: 'Internal Server Error', 
+    error: err.message 
+  });
 });
 
 // ✅ Start server

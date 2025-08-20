@@ -35,7 +35,6 @@ Respond in JSON format like:
     );
 
     const modelText = response.data.choices?.[0]?.message?.content || '';
-    console.log("Model response:", modelText);
 
     const jsonStart = modelText.indexOf('[');
     const jsonEnd = modelText.lastIndexOf(']');

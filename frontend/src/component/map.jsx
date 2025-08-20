@@ -117,6 +117,7 @@ const Map = () => {
       const { minLat, maxLat, minLon, maxLon } = getBoundingBox(latitude, longitude, 150);
       const apiUrl = `https://api.geoapify.com/v2/places?categories=tourism&filter=rect:${minLon},${minLat},${maxLon},${maxLat}&limit=50&apiKey=235a929292f84ed0a5587d7ea5eab757`;
       const res = await axios.get(apiUrl);
+      
       setPlaces(
         res.data.features.map((f) => ({
           name: f.properties.name,
