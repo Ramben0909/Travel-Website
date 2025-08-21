@@ -8,10 +8,13 @@ const Services = () => {
   const [userRating, setUserRating] = useState(0);
   const { user, isAuthenticated, isLoading } = useAuthContext();
 
+  // ✅ Get backend URL from environment variables (Vite)
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5001";
+
   // ✅ Fetch Top Reviews
   const fetchTopReviews = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/reviews/topreviews`);
+      const res = await axios.get(`${BACKEND_URL}/api/reviews/topreviews`);
       setTopReviews(res.data.reviews || []);
     } catch (error) {
       console.error("Failed to fetch reviews", error);
@@ -21,24 +24,21 @@ const Services = () => {
   // ✅ Submit Review
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
-
     if (!isAuthenticated) {
       alert("You must be logged in to submit a review.");
       return;
     }
-
     if (!userReview.trim() || userRating < 1 || userRating > 5) {
       alert("Please provide a valid review and rating (1-5 stars).");
       return;
     }
 
     try {
-      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/reviews/addreview`, {
+      await axios.post(`${BACKEND_URL}/api/reviews/addreview`, {
         userName: user?.name || "Anonymous",  // ✅ send user.name
         review: userReview,
         rating: userRating,
       });
-
       setUserReview("");
       setUserRating(0);
       fetchTopReviews(); // refresh list
@@ -55,7 +55,7 @@ const Services = () => {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Our Services</h2>
-
+      
       {/* ✅ Reviews Section */}
       <div className="mb-6">
         <h3 className="text-xl font-semibold mb-2">Top Reviews</h3>
