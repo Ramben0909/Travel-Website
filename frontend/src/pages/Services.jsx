@@ -11,7 +11,7 @@ const Services = () => {
   // ✅ Fetch Top Reviews
   const fetchTopReviews = async () => {
     try {
-      const res = await axios.get("http://localhost:5001/api/reviews/topreviews");
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/reviews/topreviews`);
       setTopReviews(res.data.reviews || []);
     } catch (error) {
       console.error("Failed to fetch reviews", error);
@@ -33,7 +33,7 @@ const Services = () => {
     }
 
     try {
-      await axios.post("http://localhost:5001/api/reviews/addreview", {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/reviews/addreview`, {
         userName: user?.name || "Anonymous",  // ✅ send user.name
         review: userReview,
         rating: userRating,
