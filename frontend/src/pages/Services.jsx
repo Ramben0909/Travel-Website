@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useAuthContext } from "../context/useAuthContext"; // ✅ make sure path is correct
 
 const Services = () => {
   const [topReviews, setTopReviews] = useState([]);
   const [userReview, setUserReview] = useState("");
   const [userRating, setUserRating] = useState(0);
+  const { user, isAuthenticated, isLoading } = useAuthContext();
 
   // ✅ Fetch Top Reviews
   const fetchTopReviews = async () => {
@@ -19,6 +21,12 @@ const Services = () => {
   // ✅ Submit Review
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isAuthenticated) {
+      alert("You must be logged in to submit a review.");
+      return;
+    }
+
     if (!userReview.trim() || userRating < 1 || userRating > 5) {
       alert("Please provide a valid review and rating (1-5 stars).");
       return;
@@ -26,9 +34,11 @@ const Services = () => {
 
     try {
       await axios.post("http://localhost:5001/api/reviews/addreview", {
+        userName: user?.name || "Anonymous",  // ✅ send user.name
         review: userReview,
         rating: userRating,
       });
+
       setUserReview("");
       setUserRating(0);
       fetchTopReviews(); // refresh list
@@ -59,7 +69,7 @@ const Services = () => {
                 <p className="font-medium">⭐ {rev.rating}/5</p>
                 <p className="italic">{rev.review}</p>
                 <p className="text-sm text-gray-500">
-                  {rev.username || "Anonymous"}
+                  {rev.userName || "Anonymous"} {/* ✅ match backend field */}
                 </p>
               </li>
             ))}
@@ -70,30 +80,36 @@ const Services = () => {
       </div>
 
       {/* ✅ Add Review Form */}
-      <form onSubmit={handleReviewSubmit} className="space-y-4">
-        <textarea
-          value={userReview}
-          onChange={(e) => setUserReview(e.target.value)}
-          placeholder="Write your review..."
-          className="w-full border p-2 rounded"
-          rows="3"
-        />
-        <input
-          type="number"
-          value={userRating}
-          onChange={(e) => setUserRating(Number(e.target.value))}
-          min="1"
-          max="5"
-          placeholder="Rating (1-5)"
-          className="w-32 border p-2 rounded"
-        />
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Submit Review
-        </button>
-      </form>
+      {isAuthenticated ? (
+        <form onSubmit={handleReviewSubmit} className="space-y-4">
+          <textarea
+            value={userReview}
+            onChange={(e) => setUserReview(e.target.value)}
+            placeholder="Write your review..."
+            className="w-full border p-2 rounded"
+            rows="3"
+          />
+          <input
+            type="number"
+            value={userRating}
+            onChange={(e) => setUserRating(Number(e.target.value))}
+            min="1"
+            max="5"
+            placeholder="Rating (1-5)"
+            className="w-32 border p-2 rounded"
+          />
+          <button
+            type="submit"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Submit Review
+          </button>
+        </form>
+      ) : (
+        <p className="text-red-500 mt-4">
+          Please log in to submit a review.
+        </p>
+      )}
     </div>
   );
 };
