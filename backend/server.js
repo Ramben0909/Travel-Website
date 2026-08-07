@@ -3,10 +3,12 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { connectDBs } from "./src/config/db.js";
 import routes from "./src/routes/routes.js";
+import dns from "dns";
 
 dotenv.config();
 
 const app = express();
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 // ✅ Middleware
 app.use(
@@ -16,7 +18,6 @@ app.use(
     credentials: true,
   })
 );
-
 
 app.use(express.json());
 
@@ -52,5 +53,7 @@ const startServer = async () => {
     process.exit(1);
   }
 };
+
+
 
 startServer();

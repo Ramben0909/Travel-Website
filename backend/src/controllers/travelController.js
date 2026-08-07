@@ -17,19 +17,19 @@ Respond in JSON format like:
 ]
 `;
 
-  try {
-    console.log("Sending prompt to Perplexity:", prompt);
+try {
+    console.log("Sending prompt to Groq:", prompt);
 
     const response = await axios.post(
-      'https://api.perplexity.ai/chat/completions',
+      'https://api.groq.com/openai/v1/chat/completions', // Corrected URL
       {
-        model: 'sonar-pro',  //  Supported model
+        model: 'llama-3.3-70b-versatile',  // Corrected Model for Groq
         messages: [{ role: 'user', content: prompt }]
       },
       {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.PERPLEXITY_API_KEY}`
+          'Authorization': `Bearer ${process.env.GROQ_API_KEY}` // Corrected Env Var
         }
       }
     );
@@ -51,7 +51,7 @@ Respond in JSON format like:
     return res.status(200).json({ recommendations });
 
   } catch (err) {
-    console.error("Perplexity API error:", err.response?.status, err.response?.data || err.message);
-    return res.status(500).json({ error: 'Perplexity API request failed' });
+    console.error("Gorq API error:", err.response?.status, err.response?.data || err.message);
+    return res.status(500).json({ error: 'Gorq API request failed' });
   }
 };
