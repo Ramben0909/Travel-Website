@@ -23,7 +23,7 @@ try {
     const response = await axios.post(
       'https://api.groq.com/openai/v1/chat/completions', // Corrected URL
       {
-        model: 'llama-3.3-70b-versatile',  // Corrected Model for Groq
+        model:'openai/gpt-oss-120b', // Corrected Model for Groq
         messages: [{ role: 'user', content: prompt }]
       },
       {
